@@ -4,7 +4,7 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import toast from "react-hot-toast"
-import { type SiteInduction } from "@/lib/types/induction"
+import { type SiteInduction,  InductionStatus} from "@/lib/types/induction"
 import { PersonalInfoSection } from "./sections/personal-info-section"
 import { OccupationalHealthSection } from "./sections/occupational-health-section"
 import { ComplianceSection } from "./sections/compliance-section"
@@ -12,7 +12,7 @@ import { RiskAssessmentSection } from "./sections/risk-assessment-section"
 import { ConfirmationSection } from "./sections/confirmation-section"
 import { ProjectDetailsSection } from "./sections/project-detail-section"
 import { useFormWizard } from "@/hooks/useFormWizard"
-import { saveInduction } from "@/app/actions/inductionActions"
+import { saveInduction,approveInduction} from "@/app/actions/inductionActions"
 import { initialInductionState } from "@/lib/types/induction"
 import { Card } from "@/components/ui/card"
 import { sectionSchemas } from "@/lib/validations/inductionSections"
@@ -114,6 +114,31 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
     },
   })
 
+  const handleStatusChange = async () => {
+    if (!currentInduction?._id) {
+      toast.error("No induction selected for approval.");
+      return;
+    }
+
+   
+  
+    try {
+      const response = await approveInduction(currentInduction._id);
+  
+      if (response.success) {
+        toast.success("Induction approved successfully!");
+        onComplete?.()
+        onClose()
+      } else {
+        toast.error(response.message || "Failed to approve induction.");
+      }
+    } catch (error) {
+      console.error("Approval error:", error);
+      toast.error("An error occurred while approving the induction.");
+    }
+  };
+  
+
   // Create properly typed section props with type assertion
   const commonSectionProps: SectionProps = {
     formState,
@@ -122,6 +147,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
     getSelectProps: ((name: keyof SiteInduction) => sectionProps.getSelectProps(name as string)) as (name: keyof SiteInduction) => any,
     setFormState: sectionProps.setFormState,
   }
+
 
   if (isEditMode) {
     return (
@@ -151,7 +177,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
               Cancel
             </Button>
             
-            {hasPermission(Permissions.CREATE_INDUCTION) && (<Button
+            {hasPermission(Permissions.CREATE_INDUCTION)&&  currentInduction?.status != InductionStatus.APPROVED && (<Button
               type="submit"
               className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
               disabled={isLoading || isSaving}
@@ -160,11 +186,13 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
             </Button>)
             }
 
-            {hasPermission(Permissions.APPROVE_INDUCTION)  && (<Button
+            {hasPermission(Permissions.APPROVE_INDUCTION) && currentInduction?.status != InductionStatus.APPROVED && (<Button
+            type="button"
               className="bg-green-600 hover:bg-green-800 text-btn-add-fg"
               disabled={isLoading || isSaving}
+               onClick={handleStatusChange}
             >
-              {isLoading || isSaving ? "Saving..." : "Approve"}
+              {isLoading || isSaving ? "Approving..." : "Approve"}
             </Button>)}
           </div>
         </form>

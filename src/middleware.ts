@@ -4,16 +4,16 @@ import { NextResponse } from "next/server"
 // Define role-based access permissions and default redirects
 const roleConfig = {
   ADMIN: {
-    allowedRoutes: ["/contacts", "/inductions", "/projects", "/timesheet"],
+    allowedRoutes: ["/contacts", "/inductions", "/projects", "/timesheet" ,"/profile"],
     defaultRedirect: "/contacts",
   },
  
   MANAGER: {
-    allowedRoutes: ["/contacts", "/projects", "/timesheet"],
+    allowedRoutes: ["/contacts", "/projects", "/timesheet","/profile"],
     defaultRedirect: "/projects",
   },
   USER: {
-    allowedRoutes: ["/inductions"],
+    allowedRoutes: ["/inductions","/profile"],
     defaultRedirect: "/inductions",
   },
   // Add more roles as needed
@@ -67,6 +67,6 @@ export default withAuth(
 
 // Update the matcher configuration to include all protected routes and the root path
 export const config = {
-  matcher: ["/", "/contacts/:path*", "/inductions/:path*", "/projects/:path*", "/timesheet/:path*"],
+  matcher: ["/", "/contacts/:path*", "/inductions/:path*", "/projects/:path*", "/profile/:path*","/timesheet/:path*"],
 }
 

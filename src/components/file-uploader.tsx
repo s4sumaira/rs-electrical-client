@@ -2,10 +2,11 @@
 
 import { useState, useRef, useCallback } from "react"
 import { FilePreview } from "@/components/file-preview"
-import { uploadFiles } from "@/app/actions/uploadActions"
+import { uploadFiles } from "@/app/actions/uploadActions" 
 import { Camera, Upload } from "lucide-react"
 import type React from "react"
-import { DocType } from "@/lib/types/contact"
+import { DocTypes } from "@/lib/types/contact"
+import { Card, CardContent } from "./ui/card";
 
 
 
@@ -17,14 +18,14 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export interface FileWithDocType {
   file: File
-  docType: DocType | string
+  docType: DocTypes | string
 }
 
 export function FileUploader() {
   const [files, setFiles] = useState<FileWithDocType[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [selectedDocType, setSelectedDocType] = useState<DocType | "">("")
-  const [otherDocType, setOtherDocType] = useState<string>("")
+  const [selectedDocType, setSelectedDocType] = useState<DocTypes | "">("")
+  const [otherDocType, setOtherDocType] = useState<string>("OTHER")
   const [isUploading, setIsUploading] = useState(false)
   const [isCameraOpen, setIsCameraOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -34,36 +35,39 @@ export function FileUploader() {
   const processFiles = useCallback(
     (selectedFiles: File[]) => {
       if (files.length + selectedFiles.length > MAX_FILES) {
-        setError(`You can only upload a maximum of ${MAX_FILES} files.`)
-        return
+        setError(`You can only upload a maximum of ${MAX_FILES} files.`);
+        return;
       }
 
       const validFiles = selectedFiles.filter((file) => {
         if (file.size > MAX_FILE_SIZE) {
-          setError(`${file.name} is too large. Maximum file size is 5 MB.`)
-          return false
+          setError(`${file.name} is too large. Maximum file size is 5 MB.`);
+          return false;
         }
 
-        const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`
+        const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
         if (!ALLOWED_FILE_TYPES.includes(fileExtension)) {
-          setError(`${file.name} is not an allowed file type.`)
-          return false
+          setError(`${file.name} is not an allowed file type.`);
+          return false;
         }
-        return true
-      })
+        return true;
+      });
 
       const newFiles = validFiles.map((file) => ({
         file,
-        docType: selectedDocType === DocType.OTHER ? otherDocType : selectedDocType,
-      }))
+        docType: selectedDocType,
+      }));
 
-      setFiles((prevFiles) => [...prevFiles, ...newFiles])
-      setError(null)
-      setSelectedDocType("") // Reset document type after file selection
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      setError(null);
+      setSelectedDocType("") 
+
+     
     },
-    [files, selectedDocType, otherDocType],
-  )
-
+    [files, selectedDocType]
+    
+  );
+  console.log('Processed files ....' , files);
   const closeCamera = useCallback(() => {
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = (videoRef.current.srcObject as MediaStream).getTracks()
@@ -132,43 +136,33 @@ export function FileUploader() {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (files.length === 0) {
-      setError("Please select at least one file to upload.")
-      return
-    }
+  const encodeFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); 
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+  
 
-    setIsUploading(true)
-    setError(null)
-
-    try {
-      const urls = await uploadFiles(files)
-      setFiles([])
-      //alert(`Files uploaded successfully! URLs: ${urls.join(", ")}`)
-    } catch (error) {
-      console.error("Error uploading files:", error)
-      setError("An error occurred while uploading the files. Please try again.")
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
+ 
   const isDocTypeSelected = selectedDocType !== ""
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-card text-card-foreground rounded-lg shadow-md">
-      <div className="flex items-center space-x-4">
+    <Card>
+      <CardContent className="p-6 space-y-4">
+      <div className="flex flex-wrap gap-4 items-center">
         <select
           id="docType"
           value={selectedDocType}
-          onChange={(e) => setSelectedDocType(e.target.value as DocType)}
+          onChange={(e) => setSelectedDocType(e.target.value as DocTypes)}
           className="block w-1/3 pl-3 pr-10 py-2 text-sm border-input bg-background text-foreground rounded-md focus:ring-2 focus:ring-ring focus:border-ring"
         >
           <option value="" disabled>
             Select document type
           </option>
-          {Object.values(DocType).map((type) => (
+          {Object.values(DocTypes).map((type) => (
             <option key={type} value={type}>
               {type.replace(/_/g, " ")}
             </option>
@@ -203,7 +197,7 @@ export function FileUploader() {
         />
       </div>
 
-      {selectedDocType === DocType.OTHER && (
+      {selectedDocType === DocTypes.OTHER && (
         <div>
           <label htmlFor="otherDocType" className="block text-sm font-medium text-foreground">
             Specify Document Type
@@ -256,15 +250,33 @@ export function FileUploader() {
           </div>
         ))}
       </div>
-
+      <div className="sticky bottom-0 bg-background py-4">
       <button
-        type="submit"
+      
         className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         disabled={files.length === 0 || isUploading}
+        onClick={async () => {         
+          setIsUploading(true);  
+          
+          const encodedFiles = await Promise.all(
+            files.map(async ({ file, docType }) => ({
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: file.size,
+              docType,
+              fileData: await encodeFileToBase64(file), // Convert file to Base64
+            }))
+          );
+          await uploadFiles(encodedFiles);
+          setIsUploading(false);
+          setFiles([]);
+        }}
       >
         {isUploading ? "Uploading..." : "Upload Files"}
       </button>
-    </form>
+      </div>
+      </CardContent>
+      </Card>
   )
 }
 

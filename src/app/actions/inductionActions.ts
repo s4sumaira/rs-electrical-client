@@ -63,8 +63,8 @@ export async function saveInduction(
       body: JSON.stringify(postData),
     })
 
-    console.log(postData)
-    console.log(response);
+    // console.log(postData)
+    // console.log(response);
 
     if (!response.success) {
       return {
@@ -153,10 +153,10 @@ export async function handleInductionSubmit(
     // Convert FormData to object
     const rawData: Partial<SiteInduction> = Object.fromEntries(formData);
 
-    console.log("currentSection",currentSection);
-    console.log("submissionType",submissionType);
-    console.log("id",id);
-    console.log("rawData",rawData);
+    // console.log("currentSection",currentSection);
+    // console.log("submissionType",submissionType);
+    // console.log("id",id);
+    // console.log("rawData",rawData);
 
     // Validate current section
     const validatedSection = sectionSchemas[currentSection].safeParse(rawData);
@@ -317,6 +317,40 @@ export async function deleteInduction(id: string): Promise<ActionState<SiteInduc
     return {
       success: false,
       message: "An unexpected error occurred while deleting the induction.",
+      error: error instanceof Error ? error.message : "Unknown error.",
+    };
+  }
+}
+
+export async function approveInduction(id: string): Promise<ActionState<SiteInduction>> {
+  try {
+
+   
+    if(id ==""){
+      return {
+        success: false,
+        message: "Failed to approve induction. Please try again.",
+        error:  "Induction Id can not be null.",
+      };
+    }
+   
+    const response = await apiCall<ApiResponse<SiteInduction>>(`/inductions/approve/${id}`, {
+      method: "POST",
+    });
+
+    if (!response.success) {
+      return {
+        success: false,
+        message: "Failed to approve induction. Please try again.",
+        error: response.error || "Unknown error occurred.",
+      };
+    }
+
+    return { success: true, message: "Induction approved successfully." };
+  } catch (error) {
+    return {
+      success: false,
+      message: "An unexpected error occurred while approving the induction.",
       error: error instanceof Error ? error.message : "Unknown error.",
     };
   }

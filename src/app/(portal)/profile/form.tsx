@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Contact } from "@/lib/types/contact";
 import { useForm } from "@/hooks/useForm";
-import { uploadFile, deleteFile } from "@/app/actions/uploadActions";
+import { uploadFiles, deleteFile } from "@/app/actions/uploadActions";
 import { updateContact, getLoggedInUserContact } from "@/app/actions/contactActions";
 import { Loader } from "@/components/loader";
 import { ProfileHeader } from "./header";
@@ -93,7 +93,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     formData.append("type", type);
   
     try {
-      const result = await uploadFile(formData);
+     // const result = await uploadFiles(formData);
   
       // if (result.success) {
       //   if (type === "profile") {

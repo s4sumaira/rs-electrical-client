@@ -39,6 +39,7 @@ export const InductionList = () => {
   });
 
   const columns: TableColumn<SiteInduction>[] = [
+    
     {
       header: "Induction Project",
       key: "project.name",

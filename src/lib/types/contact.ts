@@ -5,14 +5,14 @@ export enum ContactType {
   CONTRACTOR = 'CONTRACTOR',
 }
 
-export enum DocType {
-  LABOURER_CARD = 'LABOURER_CARD',
-  APPRENTICE_CARD = 'APPRENTICE_CARD',
-  INSTALLATION_ELECTRICIAN='INSTALLATION_ELECTRICIAN',
-  EXPERIENCED_WORKER='EXPERIENCED_WORKER',
-  SITE_MANAGER='SITE_MANAGER',
-  PROJECT_MANAGER='PROJECT_MANAGER',
-  OTHER='OTHER'
+export enum DocTypes {
+  LABOURER_CARD ='LABOURER CARD (GREEN)' ,
+  APPRENTICE_CARD = 'APPRENTICE CARD',
+  INSTALLATION_ELECTRICIAN = 'INSTALLATION ELECTRICIAN (GOLD)' ,
+  EXPERIENCED_WORKER = 'EXPERIENCED WORKER',
+  SITE_MANAGER_CARD= 'SITE MANAGER CARD (BLACK)' ,
+  PROJECT_MANAGER_CARD= 'PROJECT MANAGER CARD (BLACK)' ,
+  OTHER ='OTHER'
 
 }
  
@@ -20,8 +20,15 @@ export enum DocType {
 export interface ContactDocument  {
   _id?: string;
   url?:string;
-  contact?:Contact;
-  //file?: FileWithDocType;
+  contact?:string;
+  fileName:string;
+  fileType:string;
+  fileSize:string;
+  docType:string;
+  fileKey:string;
+  description?:string;
+  presignedUrl?: string;
+ 
 }
 
 export interface Contact extends Record<string, unknown> {
