@@ -28,6 +28,7 @@ export interface ContactDocument  {
   fileKey:string;
   description?:string;
   presignedUrl?: string;
+  isSelected?:boolean;
  
 }
 

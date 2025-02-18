@@ -102,7 +102,7 @@ export const complianceSchema = z.object({
     
     // Asbestos Awareness
     hasAsbestosAwareness: z.boolean(),
-    completionByDate: z.string().optional(),
+    asbestosCompletionDate: z.string().optional(),    
     
     // Other Qualifications
     hasOtherQualifications: z.boolean(),
@@ -131,11 +131,11 @@ export const complianceSchema = z.object({
     }
 
     // Asbestos Awareness Validation
-    if (!data.hasAsbestosAwareness && !data.completionByDate) {
+    if (!data.hasAsbestosAwareness && !data.asbestosCompletionDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Please specify when you will complete the Asbestos Awareness Certificate",
-        path: ['completionByDate'],
+        path: ['asbestosCompletionDate'],
       });
     }
 
@@ -159,7 +159,19 @@ export const complianceSchema = z.object({
   })
 });
 
-// 5. Risk Assessment Section Schema
+// 5. Documents Section Schema
+export const documentsSchema = z.object({
+
+  documents:z.array( z.object({
+    _id:z.string(),
+    isSelected: z.boolean(),  
+
+  })).optional(),
+  
+  })
+  
+
+// 6. Risk Assessment Section Schema
 export const riskAssessmentSchema = z.object({
   riskAssessment: z.object({
     briefed: z.boolean(),
@@ -173,21 +185,10 @@ export const riskAssessmentSchema = z.object({
   ),
 })
 
-// 7. Documents Section Schema
-// export const documentsSchema = z.object({
-//   documents: z.array(
-//     z.object({
-//       filename: z.string().min(1, "Filename is required"),
-//       path: z.string().min(1, "File path is required"),
-//       uploadedAt: z.date(),
-//       type: z.string().min(1, "File type is required"),
-//     })
-//   ).min(1, "At least one document is required"),
-// })
 
 
 
-// 6. Confirmation Section Schema
+// 7. Confirmation Section Schema
 export const confirmationSchema = z.object({
   inductionCompleted: z.boolean(),
   confirmation: z.object({
@@ -224,8 +225,8 @@ export const sectionSchemas = [
   personalInfoSchema,
   occupationalHealthSchema,
   complianceSchema,
-  riskAssessmentSchema,
-  //documentsSchema,
+  documentsSchema,
+  riskAssessmentSchema, 
   confirmationSchema,
 ] as const
 

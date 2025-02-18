@@ -86,6 +86,8 @@ export function useFormWizard<T extends Record<string, any>, V = any>({
   const validateSection = useCallback(async () => {
     try {
       const validationResult = await validate(currentSectionIndex, formState);
+
+      console.log("Validation Result",validationResult);
       
       if (!isValid(validationResult)) {
         setSectionErrors(getValidationErrors(validationResult));

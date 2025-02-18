@@ -1,4 +1,4 @@
-import { SupervisedBy } from "./project"
+import { ContactDocument } from "./contact" 
 
 export enum InductionStatus {
     DRAFT = "DRAFT",
@@ -57,12 +57,12 @@ export enum InductionStatus {
     understood: boolean
   }
   
-  interface Document {
-    filename: string
-    path: string
-    uploadedAt: Date
-    type: string
-  }
+  // interface Document {
+  //   filename: string
+  //   path: string
+  //   uploadedAt: Date
+  //   type: string
+  // }
   
   interface Confirmation {
     signature: string
@@ -83,10 +83,11 @@ export enum InductionStatus {
     occupationalHealth: OccupationalHealth
     compliance: Compliance
     riskAssessment: RiskAssessment
-    documents?: Document[]
+    documents?: ContactDocument[] |any[]
     //statusHistory: StatusHistoryEntry[]
     inductionCompleted: boolean
     confirmation?: Confirmation
+   createdAt?:string;
   }
   
   // Update the initial state type to match the new structure

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Users, Briefcase, GraduationCap, Settings, X, Calendar,ContactRound} from "lucide-react";
+import { Home, Users, Briefcase, GraduationCap, Settings, X, Calendar,ContactRound,ShieldQuestion} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Permissions } from "@/lib/types/permissions";
 import { Logo } from "./logo";
@@ -15,6 +15,7 @@ const menuItems = [
   { icon: Users, text: "Contacts", href: "/contacts", permission: Permissions.VIEW_CONTACT },
   { icon: Briefcase, text: "Projects", href: "/projects", permission:Permissions.VIEW_PROJECT},
   { icon: GraduationCap, text: "Inductions", href: "/inductions", permission:Permissions.VIEW_INDUCTION },
+  { icon: ShieldQuestion, text: "Weekly Inspections", href: "/weeklyinspection", permission:Permissions.VIEW_PROJECT },
   { icon: Calendar, text: "Timesheet", href: "/timesheet", permission:Permissions.VIEW_TIMESHEET},
 ];
 

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
@@ -20,7 +21,9 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
   };
 
   return (
-    <div className="space-y-4">
+    <Card>
+      <CardContent>
+      <div className="space-y-4">
       <div className="space-y-2">
         <label htmlFor="projectName" className="text-sm font-medium">Project Name</label>
         <Input
@@ -69,5 +72,8 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
         </Button>
       </div>
     </div>
+      </CardContent>
+    </Card>
+  
   );
 }

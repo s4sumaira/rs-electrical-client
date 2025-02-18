@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ContactType } from "@/lib/types/contact"
@@ -20,7 +21,9 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
   }
 
   return (
-    <div className="space-y-4">
+    <Card>
+      <CardContent>
+      <div className="space-y-4">
       <div className="space-y-2">
         <label htmlFor="contactType" className="text-sm font-medium">
           Contact Type
@@ -58,6 +61,10 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
         <Button className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg" onClick={handleApply}>Apply Filters</Button>
       </div>
     </div>
+
+      </CardContent>
+    </Card>
+   
   )
 }
 

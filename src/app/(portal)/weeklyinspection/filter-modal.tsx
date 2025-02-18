@@ -5,17 +5,17 @@ import { Card,CardContent } from "@/components/ui/card"
 import { useState } from "react"
 
 interface FilterModalProps {
-  onApply: (filters: { name: string; postCode: string }) => void
+  onApply: (filters: { supplier: string; jobNumber: string }) => void
   onClose: () => void
-  initialFilters: { name: string; postCode: string }
+  initialFilters: { supplier: string; jobNumber: string }
 }
 
 export function FilterModal({ onApply, onClose, initialFilters }: FilterModalProps) {
-  const [name, setName] = useState(initialFilters.name)
-  const [postCode, setPostCode] = useState(initialFilters.postCode)
+  const [supplier, setSupplier] = useState(initialFilters.supplier)
+  const [jobNumber, setJobNumber] = useState(initialFilters.jobNumber)
 
   const handleApply = () => {
-    onApply({ name, postCode })
+    onApply({ supplier, jobNumber })
     onClose()
   }
 
@@ -30,9 +30,9 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
         <Input
           id="name"
           type="text"
-          placeholder="Filter by name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Filter by job #"
+          value={jobNumber}
+          onChange={(e) => setJobNumber(e.target.value)}
         />
       </div>
       <div className="space-y-2">
@@ -42,9 +42,9 @@ export function FilterModal({ onApply, onClose, initialFilters }: FilterModalPro
         <Input
           id="postCode"
           type="text"
-          placeholder="Filter by post code"
-          value={postCode}
-          onChange={(e) => setPostCode(e.target.value)}
+          placeholder="Filter by supplier"
+          value={supplier}
+          onChange={(e) => setSupplier(e.target.value)}
         />
       </div>
       <div className="flex justify-end space-x-2">

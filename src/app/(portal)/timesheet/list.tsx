@@ -15,7 +15,7 @@ import { Loader } from "@/components/loader"
 import { Permissions } from "@/lib/types/permissions"
 import { Avatar } from "@/components/avatar"
 import {jsPDF} from "jspdf";
-// import autoTable from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 
 export const AttendanceList = () => {
@@ -114,28 +114,67 @@ export const AttendanceList = () => {
 
 
 
+// const handleExportPDF = () => {
+//   const doc = new jsPDF();
+ 
+//   doc.setFontSize(18);
+//   doc.text("Attendance List", 14, 20);
+
+ 
+//   const currentDate = new Date().toISOString().split("T")[0]; 
+ 
+//   const headers = columns
+//    // .filter((column) => column.key !== "isOnSite") 
+//     .map((column) => column.header);
+ 
+//   const rows = attendanceList.map((item) =>
+//     columns
+//       //.filter((column) => column.key !== "isOnSite")
+//       .map((column) =>
+//         column.key === "isOnSite" ? (item[column.key] ? "Yes" : "No") : item[column.key]
+//       )
+//   );
+ 
+//   (doc as any).autoTable({
+//     head: [headers],
+//     body: rows,
+//     theme: "grid",
+//     headStyles: { fontSize: 10, fontStyle: "bold" },
+//     bodyStyles: { fontSize: 9 },
+//     startY: 30,
+//   });
+
+//   // Save the PDF file
+//   doc.save(`attendance_list_${currentDate}.pdf`);
+// };
+
 const handleExportPDF = () => {
   const doc = new jsPDF();
- 
+  
   doc.setFontSize(18);
   doc.text("Attendance List", 14, 20);
 
- 
   const currentDate = new Date().toISOString().split("T")[0]; 
- 
+  
   const headers = columns
-   // .filter((column) => column.key !== "isOnSite") 
     .map((column) => column.header);
- 
-  const rows = attendanceList.map((item) =>
-    columns
-      //.filter((column) => column.key !== "isOnSite")
-      .map((column) =>
-        column.key === "isOnSite" ? (item[column.key] ? "Yes" : "No") : item[column.key]
-      )
-  );
- 
-  (doc as any).autoTable({
+
+    const rows: (string | number)[][] = attendanceList.map((item) => {
+      return columns.map((column) => {
+        const value = item[column.key as keyof TimeSheet]; // Access the value using keyof TimeSheet
+  
+        if (column.key === "isOnSite") {
+          return value ? "Yes" : "No"; // Handle boolean value for isOnSite
+        }
+  
+        // Ensure that the value returned is either a string or number
+        return typeof value === 'string' || typeof value === 'number' ? value : '';
+      });
+    });
+  
+  
+  // Use autoTable after importing the plugin
+  autoTable(doc, {
     head: [headers],
     body: rows,
     theme: "grid",
@@ -147,7 +186,6 @@ const handleExportPDF = () => {
   // Save the PDF file
   doc.save(`attendance_list_${currentDate}.pdf`);
 };
-
 
 const handleExportExcel = () => {
   const currentDate = new Date().toISOString().split("T")[0]; 

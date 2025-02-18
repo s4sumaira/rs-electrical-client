@@ -8,6 +8,7 @@ import { type SiteInduction,  InductionStatus} from "@/lib/types/induction"
 import { PersonalInfoSection } from "./sections/personal-info-section"
 import { OccupationalHealthSection } from "./sections/occupational-health-section"
 import { ComplianceSection } from "./sections/compliance-section"
+import { DocumentsSection } from "./sections/documents-section"
 import { RiskAssessmentSection } from "./sections/risk-assessment-section"
 import { ConfirmationSection } from "./sections/confirmation-section"
 import { ProjectDetailsSection } from "./sections/project-detail-section"
@@ -51,6 +52,10 @@ const formSections = [
   {
     title: "Compliance",
     component: ComplianceSection,
+  },
+  {
+    title: "Documents",
+    component: DocumentsSection,
   },
   {
     title: "Risk Assessment",
@@ -101,8 +106,10 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
       return fieldErrors
     },
     onSubmit: async (formData) => {
+      
       return saveInduction(formSections.length - 1, formData, true)
-    },
+      
+    },   
     onComplete: (result) => {
       toast.success("Induction submitted successfully")
       onComplete?.()
@@ -118,9 +125,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
     if (!currentInduction?._id) {
       toast.error("No induction selected for approval.");
       return;
-    }
-
-   
+    }   
   
     try {
       const response = await approveInduction(currentInduction._id);

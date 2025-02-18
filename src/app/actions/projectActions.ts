@@ -160,6 +160,8 @@ export async function getProjects(
       records: response.data??[], 
       pagination: response.pagination 
     };
+
+    
     return {
       success: true,
       message: response.message?? '',

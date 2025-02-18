@@ -99,7 +99,7 @@ export function ComplianceSection({
                   compliance: {
                     ...prev.compliance,
                     hasAsbestosAwareness: value === 'yes',
-                    completionByDate: undefined,
+                    asbestosCompletionDate: undefined,
                   },
                 }))
               }}
@@ -118,14 +118,17 @@ export function ComplianceSection({
 
           {!formState.compliance.hasAsbestosAwareness && (
             <div className="space-y-2 pl-6">
-              <Label htmlFor="completionByDate">If no, please advise when this will be completed by:</Label>
+              <Label htmlFor="asbestosCompletionDate">If no, please advise when this will be completed by:</Label>
               <Input
                 type="date"
-                {...getInputProps("compliance.completionByDate")}
-                className={cn(errors?.["compliance.completionByDate"] && "border-destructive")}
+               {...getInputProps("compliance.asbestosCompletionDate")}  
+               value={formState.compliance.asbestosCompletionDate ? 
+                new Date(formState.compliance.asbestosCompletionDate).toISOString().split('T')[0] : ''}            
+                   
+                className={cn(errors?.["compliance.asbestosCompletionDate"] && "border-destructive")}
               />
-              {errors?.["compliance.completionByDate"] && (
-                <p className="text-sm text-destructive">{errors["compliance.completionByDate"][0]}</p>
+              {errors?.["compliance.asbestosCompletionDate"] && (
+                <p className="text-sm text-destructive">{errors["compliance.asbestosCompletionDate"][0]}</p>
               )}
             </div>
           )}

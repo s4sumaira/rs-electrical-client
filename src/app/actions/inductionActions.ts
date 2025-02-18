@@ -22,6 +22,8 @@ export async function saveInduction(
         message:''      
         }
      } 
+
+     const filteredDocuments = data.documents?.filter(doc => doc.isSelected).map(doc => doc._id) || [];
   
      const transformedData = {
       ...data,
@@ -29,9 +31,14 @@ export async function saveInduction(
       inductedBy: data.inductedBy?._id || "",
       supervisedBy:  data.supervisedBy?._id  || "",
       inductedPerson: data.inductedPerson?._id || "",
+      documents: filteredDocuments,
     };
 
-    const { _id,inductionCompleted, ...postData } = transformedData; 
+    // console.log(transformedData.documents);
+
+     console.log( 'Transformed data', JSON.stringify(transformedData));
+  
+    const { _id,inductionCompleted,createdAt, ...postData } = transformedData; 
 
     if (!data._id) {
 
@@ -56,7 +63,7 @@ export async function saveInduction(
     }
 
     // If updating existing induction
-    //console.log(JSON.stringify(postData));
+    //console.log(JSON.stringify(postData.documents));
     
     const response = await apiCall<SiteInduction>(`/inductions/${data._id}`, {
       method: "PATCH",
@@ -64,7 +71,7 @@ export async function saveInduction(
     })
 
     // console.log(postData)
-    // console.log(response);
+    console.log(response);
 
     if (!response.success) {
       return {
@@ -386,7 +393,9 @@ export async function getInductions(
     const result: FetchResult<SiteInduction> = {
       records: response.data ?? [],
       pagination: response.pagination,
-    };
+    };  
+
+    //console.log(result.records);
 
     return {
       success: true,
@@ -412,7 +421,7 @@ export async function getInduction(id: string): Promise<ActionState<SiteInductio
         message: "Failed to fetch induction. Please try again.",
         error: response.error || "Unknown error occurred.",
       };
-    }
+    }   
 
     return { success: true, message: "Induction fetched successfully.", data: response.data as SiteInduction };
   } catch (error) {

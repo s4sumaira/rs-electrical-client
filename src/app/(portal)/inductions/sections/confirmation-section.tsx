@@ -131,7 +131,7 @@ export function ConfirmationSection({
                 ref={signaturePadRef}
                 canvasProps={{
                   className: cn(
-                    "signature-canvas w-full h-40 border border-gray-700 rounded-sm",
+                    "signature-canvas w-full h-40 border border-gray-700 rounded-sm dark:bg-gray-700",
                     errors?.["confirmation.signature"] && "border-destructive"
                   ),
                 }}
