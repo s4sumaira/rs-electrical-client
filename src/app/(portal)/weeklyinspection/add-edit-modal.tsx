@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { WeeklyCheck, CheckItem, InspectionActionState } from "@/lib/types/weeklyInspection";
+import type { WeeklyCheck } from "@/lib/types/weeklyInspection";
 import { createWeeklyInspection, updateWeeklyInspection, getProjects } from "@/app/actions/weeklyInspectionActions";
 import { useForm } from "@/hooks/useForm";
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Project } from "@/lib/types/project";
 import { SearchableSelect } from "@/components/searchable-select";
+import { DocumentStatus } from "@/lib/helpers/enum";
+import { cn } from "@/lib/utils";
 
 interface WeeklyInspectionFormProps {
     onClose: () => void;
@@ -58,10 +60,11 @@ export function WeeklyInspectionForm({
         liftingAccessories: currentInspection?.liftingAccessories ?? { status: true, details: "" },
         scrubberCondition: currentInspection?.scrubberCondition ?? { status: true, details: "" },
         inspectionCompletion: currentInspection?.inspectionCompletion ?? {
-            inspectorName: "",
-            signature: "",
-            signedDate: new Date(),
+            inspectorName: currentInspection?.inspectionCompletion?.inspectorName ?? "",
+            signature: currentInspection?.inspectionCompletion?.signature ?? "",
+            signedDate: currentInspection?.inspectionCompletion?.signedDate ?? new Date(),
         },
+        documentStatus:currentInspection?.documentStatus ?? DocumentStatus.SUBMITTED
     };
 
     const { formState, errors, isLoading, handleSubmit, getInputProps, getSelectProps, setFormState } =
@@ -74,6 +77,7 @@ export function WeeklyInspectionForm({
             },
             onSuccess,
             onError: (error) => {
+                console.log(error);
                 onError?.(typeof error === "string" ? error : "Form validation failed");
             },
             resetOnSuccess: !currentInspection,
@@ -100,6 +104,13 @@ export function WeeklyInspectionForm({
 
         loadProjects();
     }, []);
+
+    useEffect(() => {
+        if (signaturePadRef.current && formState.inspectionCompletion?.signature) {
+            signaturePadRef.current.fromDataURL(formState.inspectionCompletion.signature);
+        }
+    }, [formState.inspectionCompletion?.signature]);
+    
 
     const checkItems: Array<{ key: CheckItemKey; label: string }> = [
         { key: "wheelLugs", label: "Wheel lugs and nuts (visual check)" },
@@ -128,6 +139,8 @@ export function WeeklyInspectionForm({
             }
         }
     };
+
+   
 
     return (
         <>
@@ -167,7 +180,10 @@ export function WeeklyInspectionForm({
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                                 <div className="space-y-2">
                                     <Label className="text-sm font-medium">Date</Label>
-                                    <Input {...getInputProps("date")} type="date" />
+                                    <Input {...getInputProps("date")} type="date" 
+                                      value={formState.date ? 
+                                        new Date(formState.date).toISOString().split('T')[0] : ''}  
+                                    />
                                     {errors.date && (
                                         <p className="text-sm text-destructive">{errors.date[0]}</p>
                                     )}
@@ -249,7 +265,10 @@ export function WeeklyInspectionForm({
                                         ref={signaturePadRef}
                                         onEnd={handleSignatureEnd}
                                         canvasProps={{
-                                            className: "signature-canvas w-full h-40 border border-gray-700 rounded-sm dark:bg-gray-700",
+                                            className:cn(
+                                                    "signature-canvas w-full h-40 border border-gray-700 rounded-sm dark:bg-gray-700",
+                                                    errors?.["inspectionCompletion.signature"] && "border-destructive"
+                                                    ),
                                         }}
                                     />
                                 </div>
@@ -264,6 +283,11 @@ export function WeeklyInspectionForm({
                                     </Button>
                                 </div>
                             </div>
+                            {formState.inspectionCompletion?.signedDate && (
+                                <p className="text-sm text-muted-foreground">
+                                    Signed on: {new Date(formState.inspectionCompletion?.signedDate).toLocaleString()}
+                                </p>
+                                )}
                         </CardContent>
                     </Card>
                 </form>

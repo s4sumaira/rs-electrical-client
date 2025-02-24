@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Home, Users, Briefcase, GraduationCap, Settings, X, Calendar,ContactRound,ShieldQuestion} from "lucide-react";
+import { Home, Users, Briefcase, GraduationCap, Settings, X, CalendarClock,ContactRound,ShieldAlert
+  ,ShieldQuestion, ThermometerSun,WavesLadder} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Permissions } from "@/lib/types/permissions";
 import { Logo } from "./logo";
@@ -15,8 +16,12 @@ const menuItems = [
   { icon: Users, text: "Contacts", href: "/contacts", permission: Permissions.VIEW_CONTACT },
   { icon: Briefcase, text: "Projects", href: "/projects", permission:Permissions.VIEW_PROJECT},
   { icon: GraduationCap, text: "Inductions", href: "/inductions", permission:Permissions.VIEW_INDUCTION },
-  { icon: ShieldQuestion, text: "Weekly Inspections", href: "/weeklyinspection", permission:Permissions.VIEW_PROJECT },
-  { icon: Calendar, text: "Timesheet", href: "/timesheet", permission:Permissions.VIEW_TIMESHEET},
+  { icon: ShieldAlert, text: "Daily Inspections", href: "/dailyinspection", permission:Permissions.VIEW_WEEKLY_CHECK },
+  { icon: ShieldQuestion , text: "Weekly Inspections", href: "/weeklyinspection", permission:Permissions.VIEW_WEEKLY_CHECK },
+  { icon: ThermometerSun, text: "Hot Work Permit", href: "/hotworkpermit", permission:Permissions.VIEW_WEEKLY_CHECK },
+  { icon: WavesLadder, text: "Height Work Permit", href: "/heightpermit", permission:Permissions.VIEW_WEEKLY_CHECK },
+  
+  { icon: CalendarClock, text: "Timesheet", href: "/timesheet", permission:Permissions.VIEW_TIMESHEET},
 ];
 
 export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {

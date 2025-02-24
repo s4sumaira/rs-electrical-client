@@ -1,4 +1,5 @@
 import { Project } from "./project";
+import { DocumentStatus } from "../helpers/enum";
 
 export interface CheckItem {
   status: boolean;
@@ -28,6 +29,7 @@ export interface WeeklyCheck extends Record<string, unknown>{
   liftingAccessories?: CheckItem;
   scrubberCondition?: CheckItem;
   inspectionCompletion?: InspectionCompletion;
+  documentStatus?:DocumentStatus;
 }
 
 export interface InspectionActionState {
@@ -43,4 +45,5 @@ export interface InspectionFilters {
   jobNumber?: string  
   supplier?:string  
   makeModel?:string
+  date?:string
 }

@@ -1,5 +1,6 @@
 // types/profile.ts
 import { Contact } from "@/lib/types/contact";
+import { RefObject } from "react";
 
 export interface TabProps {
   activeTab: string;
@@ -10,7 +11,7 @@ export interface TabProps {
 
 export interface ProfileHeaderProps {
     formState: Contact;
-    fileInputRef: React.RefObject<HTMLInputElement | null>; // Changed this line
+    fileInputRef:RefObject<HTMLInputElement>; 
     handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: "profile" | "document") => Promise<void>;
     removeProfilePicture: () => Promise<void>;
     triggerFileInput: () => void;

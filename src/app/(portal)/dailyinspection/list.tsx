@@ -2,30 +2,27 @@
 "use client"
 
 import { DataTable } from "@/components/data-table"
-import { getWeeklyInspections } from "@/app/actions/weeklyInspectionActions"
+import { getDailyInspections } from "@/app/actions/dailyInspectionActions"
 import { useModal } from "@/hooks/useModal"
-import type { WeeklyCheck } from "@/lib/types/weeklyInspection"
-import { WeeklyInspectionForm } from "./add-edit-modal"
+import type { DailyInspection } from "@/lib/types/dailyInspection"
+import { DailyInspectionForm } from "./add-edit-modal" 
 import type { NestedKeyOf } from "@/lib/types/table"
 import { Modal, ModalContent, ModalHeader, ModalTitle } from "@/components/modal"
 import type { TableColumn, SortDirection } from "@/lib/types/table"
 import toast from "react-hot-toast"
 import { useFetch } from "@/hooks/useFetch"
 import { Pagination } from "@/components/pagination"
-import { useCallback ,useState} from "react"
+import { useCallback, useState } from "react"
 import { ListHeader } from "@/components/list-header"
-import { FilterModal } from "@/app/(portal)/weeklyinspection/filter-modal"
+import { FilterModal } from "./filter-modal"
 import { FilterBadges } from "@/components/filter-badges"
 import { Loader } from "@/components/loader"
 import { Permissions } from "@/lib/types/permissions"
 import { DocumentStatus } from "@/lib/helpers/enum"
-import { filter } from "lodash"
 
-
-export const WeeklyInspectionList = () => {
-  const { isOpen: isFormOpen, currentRecord, openModal, closeModal } = useModal<WeeklyCheck>()
+export const DailyInspectionList = () => {
+  const { isOpen: isFormOpen, currentRecord, openModal, closeModal } = useModal<DailyInspection>()
   const { isOpen: isFilterOpen, openModal: openFilterModal, closeModal: closeFilterModal } = useModal()
-  const [isDeleting, setIsDeleting] = useState(false)
 
   const {
     records: inspections,
@@ -39,13 +36,13 @@ export const WeeklyInspectionList = () => {
     totalRecords,
     totalPages,
     refresh,
-  } = useFetch<WeeklyCheck, { search: string; supplier: string; jobNumber: string ;date:string}>({
-    fetchAction: getWeeklyInspections,
-    initialFilters: { search: "", supplier: "", jobNumber: "" ,date:""},
+  } = useFetch<DailyInspection, { search: string; supplier: string; jobNumber: string; weekStartDate: string }>({
+    fetchAction: getDailyInspections,
+    initialFilters: { search: "", supplier: "", jobNumber: "", weekStartDate: "" },
     initialPageSize: 10,
   })
 
-  const columns: TableColumn<WeeklyCheck>[] = [
+  const columns: TableColumn<DailyInspection>[] = [
     {
       header: "Project",
       key: "project.name",
@@ -62,39 +59,37 @@ export const WeeklyInspectionList = () => {
       className: "min-w-[120px]",
     },
     {
-      header: "Date",
-      key: "date",
-      isDate:true,
+      header: "Week Start Date",
+      key: "weekStartDate",
+      isDate: true,
       className: "min-w-[120px]",
-      
     },
     {
       header: "Inspector",
-      key: "inspectionCompletion.inspectorName",
+      key: "inspectorName",
       className: "min-w-[150px]",
     },
     {
       header: "Status",
       key: "documentStatus",
-      className: "min-w-[100px]"  ,
-       render: (value) => (
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      value === DocumentStatus.SUBMITTED
-                        ? "bg-yellow-200 text-black"
-                        : value === DocumentStatus.APPROVED
-                          ? "bg-green-100 text-green-800"
-                          : "bg-purple-100 text-red-500"
-                    }`}
-                  >
-                    {value as DocumentStatus}
-                  </span>
-                ), 
-      
+      className: "min-w-[100px]",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            value === DocumentStatus.SUBMITTED
+              ? "bg-yellow-200 text-black"
+              : value === DocumentStatus.APPROVED
+                ? "bg-green-100 text-green-800"
+                : "bg-purple-100 text-red-500"
+          }`}
+        >
+          {value as DocumentStatus}
+        </span>
+      ),
     },
   ]
 
-  const handleEdit = (inspection: WeeklyCheck) => {
+  const handleEdit = (inspection: DailyInspection) => {
     openModal(inspection)
   }
 
@@ -102,29 +97,11 @@ export const WeeklyInspectionList = () => {
     openModal()
   }
 
-  const handleDelete = useCallback(async (inspection: WeeklyCheck) => {
-    // setIsDeleting(true)
-    // try {
-    //   const result = await deleteWeeklyInspection(inspection._id)
-    //   if (result.success) {
-    //     toast.success(result.message || "Inspection deleted successfully!")
-    //     refresh()
-    //   } else {
-    //     toast.error(result.error || "Failed to delete inspection.")
-    //   }
-    // } catch (error) {
-    //   toast.error("An error occurred while deleting.")
-    // } finally {
-    //   setIsDeleting(false)
-    // }
-  }, [refresh])
-
-  const handleSort = (key: NestedKeyOf<WeeklyCheck>, direction: SortDirection) => {
+  const handleSort = (key: NestedKeyOf<DailyInspection>, direction: SortDirection) => {
     console.log("Sorting by:", key, direction)
-    // Implement sorting logic here
   }
 
-  const handleSuccess = (data: WeeklyCheck, message: string) => {
+  const handleSuccess = (data: DailyInspection, message: string) => {
     toast.success(message || "Inspection saved successfully!")
     refresh()
     closeModal()
@@ -147,14 +124,14 @@ export const WeeklyInspectionList = () => {
     [setFilter, setPage],
   )
 
-  const handleApplyFilters = (newFilters: { supplier: string; jobNumber: string ; date:string}) => {
+  const handleApplyFilters = (newFilters: { supplier: string; jobNumber: string; weekStartDate: string }) => {
     setFilter("supplier", newFilters.supplier)
     setFilter("jobNumber", newFilters.jobNumber)
-    setFilter("date", newFilters.date)
+    setFilter("weekStartDate", newFilters.weekStartDate)
     setPage(1)
   }
 
-  const handleRemoveFilter = (key: "search" | "supplier" | "jobNumber" | "date") => {
+  const handleRemoveFilter = (key: "search" | "supplier" | "jobNumber" | "weekStartDate") => {
     setFilter(key, "")
     setPage(1)
     refresh()
@@ -164,7 +141,7 @@ export const WeeklyInspectionList = () => {
     <>
       <div className="mx-auto">
         <ListHeader
-          title="MEWP Inspections"
+          title="Daily Checks"
           searchPlaceholder="Search inspections..."
           onSearch={handleSearch}
           onAdd={handleAdd}
@@ -172,7 +149,6 @@ export const WeeklyInspectionList = () => {
           onRefresh={refresh}
           addButtonText="New Inspection"
           className="bg-card"
-          //addPermission={Permissions.CREATE_WEEKLY_INSPECTION}
           addPermission={Permissions.CREATE_WEEKLY_CHECK}
         />
         <FilterBadges filters={filters} onRemoveFilter={handleRemoveFilter} />
@@ -180,12 +156,11 @@ export const WeeklyInspectionList = () => {
         {isLoading ? (
           <Loader />
         ) : (
-          <DataTable<WeeklyCheck>
+          <DataTable<DailyInspection>
             data={inspections}
             columns={columns}
             onSort={handleSort}
             onEdit={handleEdit}
-           // onDelete={handleDelete}
           />
         )}
 
@@ -207,10 +182,10 @@ export const WeeklyInspectionList = () => {
         <ModalContent>
           <ModalHeader>
             <ModalTitle>
-              {currentRecord ? "Edit Inspection" : "New Weekly Inspection"}
+              {currentRecord ? "Edit Inspection" : "New Daily Inspection"}
             </ModalTitle>
           </ModalHeader>
-          <WeeklyInspectionForm
+          <DailyInspectionForm
             onClose={closeModal}
             onSuccess={handleSuccess}
             onError={handleError}
@@ -227,7 +202,7 @@ export const WeeklyInspectionList = () => {
           <FilterModal
             onApply={handleApplyFilters}
             onClose={closeFilterModal}
-            initialFilters={{  supplier : filters.supplier , jobNumber: filters.jobNumber,date:filters.date }}
+            initialFilters={filters}
           />
         </ModalContent>
       </Modal>

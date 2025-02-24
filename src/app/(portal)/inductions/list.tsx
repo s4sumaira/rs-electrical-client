@@ -153,7 +153,7 @@ export const InductionList = () => {
             columns={columns}
             onSort={handleSort}
             onEdit={handleEdit}
-            onDelete={handleDelete}
+           // onDelete={handleDelete}
           />
         )}
 

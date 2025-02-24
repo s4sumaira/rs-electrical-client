@@ -1,18 +1,31 @@
 import { z } from "zod";
 
 // Helper function to validate CheckItem
+// const checkItemSchema = z.object({
+//   status: z.enum(["YES", "NO"]),
+//   details: z.string().optional().or(
+//     z.string().min(1, "Details are required when status is No")
+//   ),
+// }).refine(data => data.status === "NO"  && data.details== "", {
+//   message: "Details are required when status is No",
+//   path: ["details"],
+// });
+
 const checkItemSchema = z.object({
-  status: z.enum(["yes", "no"]),
-  details: z.string().optional().or(
-    z.string().min(1, "Details are required when status is No")
-  ),
-}).refine(data => data.status === "yes" || data.details, {
-  message: "Details are required when status is No",
+  status: z.enum(["YES", "NO"]),
+  details: z.string().optional(), // details is optional by default
+}).refine((data) => {
+  // Check if status is "NO", then ensure details is filled (not empty or undefined)
+  return data.status === "YES" || (data.status === "NO" && data.details?.trim() !== "");
+}, {
+  message: "Details are required when status is 'NO'",
   path: ["details"],
 });
 
 export const weeklyInspectionFormSchema = z.object({
-  projectName: z.string().min(1, "Project name is required"),
+  project: z.object({
+     _id: z.string().min(1, "Project selection is required"),
+   }),
   jobNumber: z.string().min(1, "Job number is required"),
   date: z.string().min(1, "Date is required"),
   supplier: z.string().min(1, "Supplier/Hirer is required"),

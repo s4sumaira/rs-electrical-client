@@ -4,12 +4,101 @@ import { Upload } from "@aws-sdk/lib-storage";
 import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client, BUCKET_NAME } from "../../lib/aws-config";
-import { FileWithDocType } from "@/components/file-uploader";
-import { ContactDocument,DocTypes } from "@/lib/types/contact";
+import { ContactDocument,Contact } from "@/lib/types/contact";
 import { apiCall } from "@/lib/helpers/apiHelper";
 import { getLoggedInUserContact } from "./contactActions";
 import type { ActionState } from "@/lib/types/form";
-import { ApiResponse } from "@/lib/types/api";
+
+
+export async function uploadProfileImg(formData: FormData): Promise<ActionState<string>>{
+
+  const file = formData.get("file") as File;
+ 
+
+  
+
+  if (!file) return { success: false, message : " File not found",error: "No file provided"  };
+
+  const contact = await getLoggedInUserContact() ;
+
+  if (!contact) {
+    return {
+      success: false,
+      message: "Contact not found.",
+      error: "Contact not found.",
+    }}
+    else{
+      try{
+        const fileName = file.name;
+        const fileExtension = file.name.split(".").pop();
+        const contactId = contact?.data?._id;
+        const fileKey = `profile-images/${contactId}.${fileName.replace(/\s+/g, '_')}`;      
+        const fileBuffer = Buffer.from(await file.arrayBuffer());   
+       
+      
+        const upload = new Upload({
+          client: s3Client,
+          params: {
+            Bucket: process.env.AWS_BUCKET_NAME!,
+            Key: fileKey,
+            Body: fileBuffer,
+            ContentType: fileExtension,
+          },
+        });   
+        
+        const result = await upload.done();
+
+       
+
+        if(!result.Location){
+          return {
+            success: false,
+            message: "Profile upload failed" as string,
+            error: "Unknown error occurred.",
+          };
+        }      
+       
+
+        try {
+          const response = await apiCall<Contact>(`/contacts/upload/${contactId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ profileImage: result.Location}),
+          });
+      
+          if (!response.success) {
+            return {
+              success: false,
+              message: response.error as string,
+              error: response.error || "Unknown error occurred.",
+            };
+          }
+
+        const profileImage = await generatePresignedUrl(result.Location);
+      
+          return {
+            success: true,
+            message: "Profile image uploaded and saved successfully.",
+            data: profileImage,
+             
+          }
+          ;
+        } catch (error) {
+          console.error("Error saving file:", error);
+          throw error;
+        }
+        
+      }
+      catch (error) {
+        console.error("Error uploading profile image:", error);
+        throw error;
+      }
+    }
+
+    
+
+
+}
 
 export async function uploadFiles(encodedFiles: { fileName: string, fileType: string, fileSize: number, docType: string, fileData: string }[]) {
 

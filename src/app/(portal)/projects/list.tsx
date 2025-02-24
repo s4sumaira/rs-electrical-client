@@ -98,7 +98,7 @@ export const ProjectList = () => {
         toast.success(result.message || "Project deleted successfully!");
         refresh();
       } else {
-        toast.error(result.error || "Failed to delete project.");
+        toast.error(result.error as string|| "Failed to delete project.");
       }
     } catch (error) {
       toast.error("An error occurred while deleting.");

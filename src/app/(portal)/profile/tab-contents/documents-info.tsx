@@ -21,15 +21,18 @@ export const DocumentsInfo: React.FC<DocumentsInfoProps> = ({
   const [selectedDocument, setSelectedDocument] = useState<ContactDocument | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchDocuments() {
-      const result = await getContactDocuments();
-      if (result.success) {
-        setDocuments(result.data as any);
-      } else {
-        setError(result.message);
-      }
+  const fetchDocuments = async () => {
+    const result = await getContactDocuments();
+    if (result.success) {
+      setDocuments(result.data as ContactDocument[]);
+    } else {
+      setError(result.message);
     }
+  };
+
+  
+  useEffect(() => {
+   
     fetchDocuments();
   }, []);
 
@@ -91,7 +94,7 @@ export const DocumentsInfo: React.FC<DocumentsInfoProps> = ({
       )}
 
       <div className="mt-6">
-        <FileUploader />
+        <FileUploader  refreshDocuments={fetchDocuments}/>
       </div>
 
       {/* Preview Modal */}

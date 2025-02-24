@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Contact } from "@/lib/types/contact";
 import { useForm } from "@/hooks/useForm";
-import { uploadFiles, deleteFile } from "@/app/actions/uploadActions";
+import { uploadProfileImg, deleteFile } from "@/app/actions/uploadActions";
 import { updateContact, getLoggedInUserContact } from "@/app/actions/contactActions";
 import { Loader } from "@/components/loader";
 import { ProfileHeader } from "./header";
@@ -86,31 +86,34 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     type: "profile" | "document"
   ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-  
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
-  
+  if (!file) return;
+
+  if (type === "profile") {
+
     try {
-     // const result = await uploadFiles(formData);
-  
-      // if (result.success) {
-      //   if (type === "profile") {
-      //     setFormState((prev) => ({ ...prev, profileImage: result.url }));
-      //   } else {
-      //     setFormState((prev) => ({
-      //       ...prev,
-      //       documents: [...(prev.documents || []), { name: file.name, description: "", url: result.url }],
-      //     }));
-      //     setDocumentName(file.name);
-      //   }
-      // } else {
-      //   setError(result.error || 'Failed to upload file');
-      // }
-    } catch (error) {
-      setError('An error occurred while uploading the file');
+      const formData = new FormData();
+    formData.append("file", file);
+    
+      const response = await uploadProfileImg(formData); 
+
+      if (!response?.success) {
+        console.error("Upload failed:", response?.message);
+        return;
+      }
+
+      if (response?.data) {
+        setFormState((prev) => ({
+          ...prev,
+          profileImage: response?.data as any, 
+        }));
+      } else {
+        console.warn("No profileImage returned from uploadProfileImg.");
+      }
+    } catch (err) {
+      console.error("Profile image upload failed:", err);
     }
+  } 
+    
   };
 
   const triggerFileInput = () => {

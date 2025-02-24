@@ -137,7 +137,7 @@ export function ProjectDetailsSection({
             <SearchableSelect
               {...getSelectProps("inductedBy._id")}
               options={inductedByOptions}
-              placeholder="Search project..."
+              placeholder="Search Inducted By..."
               isLoading={isLoadingProjects}
             />
             {errors["inductedBy._id"] && (
@@ -156,7 +156,7 @@ export function ProjectDetailsSection({
             <SearchableSelect
               {...getSelectProps("supervisedBy._id")}
               options={supervisedByOptions}
-              placeholder="Search project..."
+              placeholder="Search Supervised By..."
               isLoading={isLoadingProjects}
             />
             {errors["supervisedBy._id"] && (

@@ -137,3 +137,4 @@ body {
 .social-button {
   @apply transform transition-transform duration-200 hover:scale-110;
 }
+

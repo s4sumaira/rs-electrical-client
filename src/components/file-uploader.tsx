@@ -21,7 +21,11 @@ export interface FileWithDocType {
   docType: DocTypes | string
 }
 
-export function FileUploader() {
+interface FileUploaderProps {
+  refreshDocuments: () => void;
+}
+
+export const FileUploader: React.FC<{ refreshDocuments: () => void }> = ({ refreshDocuments }) => {
   const [files, setFiles] = useState<FileWithDocType[]>([])
   const [error, setError] = useState<string | null>(null)
   const [selectedDocType, setSelectedDocType] = useState<DocTypes | "">("")
@@ -257,7 +261,7 @@ export function FileUploader() {
         disabled={files.length === 0 || isUploading}
         onClick={async () => {         
           setIsUploading(true);  
-          
+          try {
           const encodedFiles = await Promise.all(
             files.map(async ({ file, docType }) => ({
               fileName: file.name,
@@ -269,7 +273,14 @@ export function FileUploader() {
           );
           await uploadFiles(encodedFiles);
           setIsUploading(false);
+          refreshDocuments();
           setFiles([]);
+        } catch (error) {
+          console.error("Upload failed:", error);
+         
+        } finally {
+          setIsUploading(false); 
+        }
         }}
       >
         {isUploading ? "Uploading..." : "Upload Files"}

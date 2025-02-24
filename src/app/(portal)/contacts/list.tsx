@@ -156,7 +156,7 @@ export const ContactList = () => {
         toast.success(result.message || "Contact deleted successfully!");
         refresh();
       } else {
-        toast.error(result.error || "Failed to delete contact.");
+        toast.error(result.error as string || "Failed to delete contact.");
       }
     } catch (error) {
       toast.error("An error occurred while deleting.");
