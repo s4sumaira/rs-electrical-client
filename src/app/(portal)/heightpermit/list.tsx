@@ -48,8 +48,8 @@ export const HeightPermitList = () => {
       className: "min-w-[120px]",
     },
     {
-      header: "Site",
-      key: "site",
+      header: "Project",
+      key: "project.name",
       className: "min-w-[150px]",
     },
     {
@@ -87,9 +87,9 @@ export const HeightPermitList = () => {
       render: (value) => (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
-            value === DocumentStatus.SUBMITTED
+            [ DocumentStatus.SUBMITTED].includes(value as any)
               ? "bg-yellow-200 text-black"
-              : value === DocumentStatus.APPROVED
+              : [DocumentStatus.COMPLETED, DocumentStatus.FINALISED].includes(value as any)
               ? "bg-green-100 text-green-800"
               : "bg-purple-100 text-red-500"
           }`}

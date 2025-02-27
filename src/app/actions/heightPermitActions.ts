@@ -7,15 +7,36 @@ import type { ActionState } from "@/lib/types/form";
 import type { FetchResult } from "@/lib/types/api";
 import { DocumentStatus } from "@/lib/helpers/enum";
 
-export async function createHeightPermit(
+export async function saveHeightPermit(
   prevState: ActionState<HeightPermit>,
   formData: FormData
 ): Promise<ActionState<HeightPermit>> {
   try {
+
+
+    const issuedTo = formData.get("confirmationStatus.issuedTo") === "true";
+    const issuedBy = formData.get("confirmationStatus.issuedBy") === "true";
+    const cancelledBy = formData.get("confirmationStatus.cancelledBy") === "true";
+    const signedOffBy = formData.get("confirmationStatus.signedOffBy") === "true";
+
+    let docStatus = DocumentStatus.DRAFT;
+    if( issuedTo && issuedBy && !cancelledBy){
+      docStatus= DocumentStatus.SUBMITTED;
+    }
+    else if (issuedTo && issuedBy && cancelledBy){
+      docStatus= DocumentStatus.COMPLETED;
+    }
+    else if (issuedTo && issuedBy && cancelledBy && signedOffBy){
+      docStatus= DocumentStatus.FINALISED;
+    }
+     
+
     const transformedData = {
-      permitNumber: formData.get("permitNumber"),
+      issueDate: formData.get("issueDate"),
+      lastReviewedDate: formData.get("lastReviewedDate"),
+      nextReviewDate: formData.get("nextReviewDate"),
       date: formData.get("date"),
-      site: formData.get("site"),
+      project: formData.get("project._id"),
       location: formData.get("location"),
       contractor: formData.get("contractor"),
       phoneNumber: formData.get("phoneNumber"),
@@ -53,6 +74,13 @@ export async function createHeightPermit(
         storedMaterials: formData.get("environmental.storedMaterials") === "true",
         otherEnvironmental: formData.get("environmental.otherEnvironmental") as string,
       },
+      confirmationStatus: {
+        issuedTo: formData.get("confirmationStatus.issuedTo") === "true",
+        issuedBy: formData.get("confirmationStatus.issuedBy") === "true",
+        cancelledBy: formData.get("confirmationStatus.cancelledBy") === "true",
+        signedOffBy: formData.get("confirmationStatus.signedOffBy") === "true",
+
+      },
       authorization: {
         issuedToName: formData.get("authorization.issuedToName"),
         issuedToSignature: formData.get("authorization.issuedToSignature"),
@@ -61,47 +89,49 @@ export async function createHeightPermit(
         issuedBySignature: formData.get("authorization.issuedBySignature"),
         issuedByDate: formData.get("authorization.issuedByDate"),
       },
-      documentStatus: DocumentStatus.SUBMITTED,
+      cancellation: {
+        cancelledByName: formData.get("cancellation.cancelledByName"),
+        cancelledBySignature: formData.get("cancellation.cancelledBySignature"),
+        cancelledByDate: formData.get("cancellation.cancelledByDate"),
+        cancellationReason: formData.get("cancellation.cancellationReason"),
+        cancellationDate: formData.get("cancellation.cancellationDate"),
+        cancellationTime: formData.get("cancellation.cancellationTime"),
+      },
+      finalSignOff: {
+        signedOffByName: formData.get("finalSignOff.signedOffByName"),
+        signedOffBySignature: formData.get("finalSignOff.signedOffBySignature"),
+        signedOffByDate: formData.get("finalSignOff.signedOffByDate"),
+
+      },
+      documentStatus: docStatus,
     };
+    console.log(JSON.stringify(transformedData));
+    if (!formData.get('_id')) {
 
-    const response = await apiCall<HeightPermit>("/heightpermit", {
-      method: "POST",
-      body: JSON.stringify(transformedData),
-    });
+      const response = await apiCall<HeightPermit>("/heightworkpermit", {
+        method: "POST",
+        body: JSON.stringify(transformedData),
+      });
 
-    if (!response.success) {
+      if (!response.success) {
+        return {
+          success: false,
+          message: response.message as string,
+          error: response.error || "Unknown error occurred.",
+        };
+      }
+
       return {
-        success: false,
-        message: response.message as string,
-        error: response.error || "Unknown error occurred.",
+        success: true,
+        message: "Height permit created successfully.",
+        data: response.data as HeightPermit,
       };
     }
 
-    return {
-      success: true,
-      message: "Height permit created successfully.",
-      data: response.data as HeightPermit,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: "An unexpected error occurred while creating the permit.",
-      error: error instanceof Error ? error.message : "Unknown error.",
-    };
-  }
-}
-
-export async function updateHeightPermit(
-  prevState: ActionState<HeightPermit>,
-  formData: FormData
-): Promise<ActionState<HeightPermit>> {
-  try {
+    // update handling 
     const id = formData.get("_id");
-    const transformedData = {
-      // Same as createHeightPermit transformedData
-    };
 
-    const response = await apiCall<HeightPermit>(`/heightpermit/${id}`, {
+    const response = await apiCall<HeightPermit>(`/heightworkpermit/${id}`, {
       method: "PATCH",
       body: JSON.stringify(transformedData),
     });
@@ -119,10 +149,11 @@ export async function updateHeightPermit(
       message: "Height permit updated successfully.",
       data: response.data as HeightPermit,
     };
+
   } catch (error) {
     return {
       success: false,
-      message: "An unexpected error occurred while updating the permit.",
+      message: "An unexpected error occurred while creating the permit.",
       error: error instanceof Error ? error.message : "Unknown error.",
     };
   }
@@ -145,7 +176,7 @@ export async function getHeightPermits(
     queryParams.set("page", page.toString());
     queryParams.set("pageSize", pageSize.toString());
 
-    const response = await apiCall<HeightPermit>(`/heightpermit?${queryParams}`);
+    const response = await apiCall<HeightPermit>(`/heightworkpermit?${queryParams}`);
 
     if (!response.success) {
       return {

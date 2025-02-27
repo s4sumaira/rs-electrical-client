@@ -1,13 +1,37 @@
 "use server"
 
 import { Upload } from "@aws-sdk/lib-storage";
-import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand, GetObjectCommand ,ListObjectsV2Command} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client, BUCKET_NAME } from "../../lib/aws-config";
 import { ContactDocument,Contact } from "@/lib/types/contact";
 import { apiCall } from "@/lib/helpers/apiHelper";
 import { getLoggedInUserContact } from "./contactActions";
 import type { ActionState } from "@/lib/types/form";
+
+export async function DelBeforeSave(contactId:string){
+
+  const folderPrefix = `profile-images/${contactId}/`;
+  const listCommand = new ListObjectsV2Command({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Prefix: folderPrefix,
+  });
+
+  const listedObjects = await s3Client.send(listCommand);
+
+  if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+    const deleteParams = {
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Delete: {
+        Objects: listedObjects.Contents.map((item) => ({ Key: item.Key! })),
+      },
+    };
+
+    // 🗑️ Step 2: Delete all files in the folder
+    await s3Client.send(new DeleteObjectsCommand(deleteParams));
+
+}
+}
 
 
 export async function uploadProfileImg(formData: FormData): Promise<ActionState<string>>{
@@ -28,11 +52,13 @@ export async function uploadProfileImg(formData: FormData): Promise<ActionState<
       error: "Contact not found.",
     }}
     else{
+     
       try{
-        const fileName = file.name;
-        const fileExtension = file.name.split(".").pop();
+
+     const res =  await  DelBeforeSave(contact?.data?._id as any);
+        const fileName = file.name;       
         const contactId = contact?.data?._id;
-        const fileKey = `profile-images/${contactId}.${fileName.replace(/\s+/g, '_')}`;      
+        const fileKey = `profile-images/${contactId}/${fileName.replace(/\s+/g, '_')}`;      
         const fileBuffer = Buffer.from(await file.arrayBuffer());   
        
       
@@ -42,7 +68,7 @@ export async function uploadProfileImg(formData: FormData): Promise<ActionState<
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: fileKey,
             Body: fileBuffer,
-            ContentType: fileExtension,
+            ContentType: file.type,
           },
         });   
         
@@ -63,7 +89,7 @@ export async function uploadProfileImg(formData: FormData): Promise<ActionState<
           const response = await apiCall<Contact>(`/contacts/upload/${contactId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ profileImage: result.Location}),
+            body: JSON.stringify({ profileImage: fileKey}),
           });
       
           if (!response.success) {
@@ -74,12 +100,12 @@ export async function uploadProfileImg(formData: FormData): Promise<ActionState<
             };
           }
 
-        const profileImage = await generatePresignedUrl(result.Location);
-      
+     
+      const img = await generatePresignedUrl(fileKey);
           return {
             success: true,
             message: "Profile image uploaded and saved successfully.",
-            data: profileImage,
+            data: img,
              
           }
           ;
@@ -181,19 +207,52 @@ export async function uploadFiles(encodedFiles: { fileName: string, fileType: st
   }
 }
 
-export async function deleteFile(fileName: string) {
-  const params = {
-    Bucket: BUCKET_NAME,
-    Key: fileName,
-  };
+export async function deleteFile() {
 
-  try {
-    await s3Client.send(new DeleteObjectCommand(params));
-    return { success: true, message: "File deleted successfully" };
-  } catch (error) {
-    console.error("Error deleting file:", error);
-    return { success: false, message: "Error deleting file" };
+  const contact = await getLoggedInUserContact() ;
+
+  if (!contact) {
+    return {
+      success: false,
+      message: "Contact not found.",
+      error: "Contact not found.",
+    };
+   
   }
+
+  const contactId = contact?.data?._id;  
+ await  DelBeforeSave(contactId as any);
+
+ try {
+  const response = await apiCall<Contact>(`/contacts/upload/${contactId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profileImage: ""}),
+  });
+
+  if (!response.success) {
+    return {
+      success: false,
+      message: response.error as string,
+      error: response.error || "Unknown error occurred.",
+    };
+  }
+
+const profileImage = "";
+
+  return {
+    success: true,
+    message: "Profile image uploaded and saved successfully.",
+    data: profileImage,
+     
+  }
+  ;
+} catch (error) {
+  console.error("Error saving file:", error);
+  throw error;
+}
+
+
 }
 
 export async function getContactDocuments(): Promise<ActionState<ContactDocument[]>>  {
@@ -246,7 +305,7 @@ export async function getContactDocuments(): Promise<ActionState<ContactDocument
 }
 
 
-async function generatePresignedUrl(fileKey: string): Promise<string> {
+export async function generatePresignedUrl(fileKey: string): Promise<string> {
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
     Key: fileKey,

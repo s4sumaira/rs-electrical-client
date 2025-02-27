@@ -3,6 +3,7 @@ import { User, Briefcase, Building, Mail, Phone, Camera, Trash2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeaderProps } from "@/lib/types/profile";
+import { ProfileImage } from "@/components/profile-image"; 
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
   formState, 
@@ -51,7 +52,11 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             className="hidden"
             onChange={(e) => handleFileUpload(e, "profile")}
           />
-        </div>
+        </div> 
+        {/* <div>
+          <ProfileImage profileImage={formState.profileImage || null} triggerFileInput={triggerFileInput} 
+          removeProfilePicture={removeProfilePicture} handleFileUpload={handleFileUpload} fileInputRef={fileInputRef as any}></ProfileImage>
+        </div> */}
         <div className="text-center md:text-left flex-grow">
           <h1 className="text-2xl font-medium">{`${formState.firstName} ${formState.lastName}`}</h1>
           <div className="flex flex-col space-y-1 text-muted-foreground">

@@ -6,6 +6,7 @@ import { apiCall } from "@/lib/helpers/apiHelper";
 import type { ActionState } from "@/lib/types/form";
 import type { FetchResult, ApiResponse } from "@/lib/types/api"
 import { parseFormData } from "@/lib/helpers/formHelper";
+import {generatePresignedUrl} from "@/app/actions/uploadActions";
 
 
 
@@ -205,7 +206,10 @@ export async function getContact(id: string): Promise<ActionState<Contact>> {
       };
     }
 
+    
     return { success: true, message: "Contact fetched successfully.", data: response.data as Contact};
+
+  
   } catch (error) {
     return {
       success: false,
@@ -230,7 +234,24 @@ export async function getLoggedInUserContact(): Promise<ActionState<Contact>> {
       };
     }
 
-    return { success: true, message: "Contact fetched successfully.", data: response.data as Contact};
+    const contact = response.data as Contact;
+    //let profileImageUrl: string | undefined;
+
+    if (contact.profileImage) {
+      try {
+        contact.profileImage = await generatePresignedUrl(contact.profileImage);
+      } catch (urlError) {
+        console.error("Failed to generate presigned URL:", urlError);
+      }
+    }
+
+    return { 
+      success: true, 
+      message: "Contact fetched successfully.", 
+      data: contact
+    };
+
+   // return { success: true, message: "Contact fetched successfully.", data: response.data as Contact};
   } catch (error) {
     return {
       success: false,

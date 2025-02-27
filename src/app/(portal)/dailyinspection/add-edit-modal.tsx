@@ -185,6 +185,7 @@ export function DailyInspectionForm({
    
 
     return (
+      <>
         <form id="daily-inspection-form" action={handleSubmit} className="flex flex-col max-h-[85vh]">
         {currentInspection?._id && (
                     <input type="hidden" name="_id" value={currentInspection._id} />
@@ -192,7 +193,7 @@ export function DailyInspectionForm({
         <Card>
           <CardContent>
            
-              <div className="p-4 border-b border-[#30363D] bg-[#0D1117] space-y-4">
+              <div className="p-4 dark:bg-[#0D1117] space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                     <Label className="text-sm text-gray-400">Project</Label>
@@ -204,7 +205,7 @@ export function DailyInspectionForm({
                 </div>
                 <div>
                     <Label className="text-sm text-gray-400">Job #</Label>
-                    <Input {...getInputProps("jobNumber")} className="bg-[#0D1117] border-[#30363D] text-white" />
+                    <Input {...getInputProps("jobNumber")} className="dark:bg-[#0D1117] border-[#30363D] dark:text-white" />
                     {errors.jobNumber && (
                                         <p className="text-sm text-destructive">{errors.jobNumber[0]}</p>
                                     )}
@@ -218,30 +219,30 @@ export function DailyInspectionForm({
                     <Input type="date" {...getInputProps("weekStartDate")}
                      value={formState.weekStartDate ? 
                         new Date(formState.weekStartDate).toISOString().split('T')[0] : ''} 
-                     className="bg-[#0D1117] border-[#30363D] text-white mt-1" />
+                     className="dark:bg-[#0D1117] border-[#30363D] dark:text-white mt-1" />
                   </div>
                   <div>
                     <Label className="text-sm text-gray-400">Supplier/Hirer</Label>
-                    <Input {...getInputProps("supplier")} className="bg-[#0D1117] border-[#30363D] text-white mt-1" />
+                    <Input {...getInputProps("supplier")} className="dark:bg-[#0D1117] border-[#30363D] dark:text-white mt-1" />
                     {errors.supplier && (
                                         <p className="text-sm text-destructive">{errors.supplier[0]}</p>
                                     )}
                   </div>
                   <div>
                     <Label className="text-sm text-gray-400">Make & Model</Label>
-                    <Input {...getInputProps("makeModel")} className="bg-[#0D1117] border-[#30363D] text-white mt-1" />
+                    <Input {...getInputProps("makeModel")} className="dark:bg-[#0D1117] border-[#30363D] dark:text-white mt-1" />
                   </div>
                 </div>
               </div>
     
               {/* Table Section */}
-              <div className="flex-1 overflow-auto bg-[#0D1117]">
+              <div className="flex-1 overflow-auto dark:bg-[#0D1117]">
                 <div className="min-w-max">
                   {/* Header Row with Inspection Items */}
                   <div className="grid" style={{ gridTemplateColumns: `150px repeat(${inspectionItems.length}, 180px)` }}>
-                    <div className="sticky left-0 bg-[#21262D] h-12 flex items-center justify-center border-b border-[#30363D] font-medium">Day</div>
+                    <div className="sticky left-0 dark:bg-[#21262D] h-12 flex items-center justify-center border-b border-[#30363D] font-medium">Day</div>
                     {inspectionItems.map((item) => (
-                      <div key={item.id} className="bg-[#21262D] h-12 flex items-center justify-center border-b border-r border-[#30363D] font-medium">
+                      <div key={item.id} className="dark:bg-[#21262D] h-12 flex items-center justify-center border-b border-r border-[#30363D] font-medium">
                         {item.label}
                       </div>
                     ))}
@@ -249,7 +250,7 @@ export function DailyInspectionForm({
                     {/* Rows for Days */}
                     {days.map((day) => (
                       <>
-                        <div key={day.key} className="sticky left-0 bg-[#0D1117] border-t border-b border-[#30363D] flex items-center justify-center font-medium">
+                        <div key={day.key} className="sticky left-0 dark:bg-[#0D1117] border-t border-b border-[#30363D] flex items-center justify-center font-medium">
                           {day.label}
                         </div>
                         {inspectionItems.map((item) => (
@@ -301,18 +302,36 @@ export function DailyInspectionForm({
               </div>
     
               {/* Footer Section */}
-              <div className="p-4 border-t border-[#30363D] bg-[#0D1117] space-y-4">
+
+               
+              <div className="p-4 border-[#30363D] dark:bg-[#0D1117] space-y-4">
                 <div>
                   <Label className="text-sm text-gray-400">Inspector Name</Label>
-                  <Input {...getInputProps("inspectorName")} className="bg-[#0D1117] border-[#30363D] text-white mt-1" />
+                  <Input {...getInputProps("inspectorName")} className="dark:bg-[#0D1117] border-[#30363D] dark:text-white mt-1" />
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button type="button" onClick={onClose} variant="outline" className="bg-transparent border-[#30363D] hover:bg-[#21262D] text-white">Cancel</Button>
-                  <Button type="submit" disabled={isLoading} className="bg-[#238636] hover:bg-[#2EA043] text-white">Save</Button>
-                </div>
-              </div>          
+               
+              </div> 
+           
           </CardContent>
         </Card>
         </form>
+                   <ModalFooter>
+                   <Button
+                       type="button"
+                       onClick={onClose}
+                       className="bg-btn-cancel hover:bg-btn-cancel-hover text-btn-cancel-fg"
+                   >
+                       Discard
+                   </Button>
+                   <Button
+                       type="submit"
+                       form="height-permit-form"
+                       disabled={isLoading}
+                       className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
+                   >
+                       {isLoading ? "Saving..." : (currentInspection ? "Update" : "Save")}
+                   </Button>
+               </ModalFooter> 
+                </>
       );
 }

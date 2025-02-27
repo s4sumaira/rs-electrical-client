@@ -4,7 +4,9 @@ export enum DocumentStatus {
     LOCKED = 'LOCKED',
     DRAFT='DRAFT',
     APPROVED='APPROVED',
-    CANCELLED='CANCELLED'
+    CANCELLED='CANCELLED',
+    COMPLETED ='COMPLETED',
+    FINALISED='FINALISED'
   }
 
   export enum StatusValues{

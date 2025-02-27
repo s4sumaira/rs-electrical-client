@@ -117,13 +117,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   };
 
   const triggerFileInput = () => {
+    console.log('File input triggered');
     fileInputRef.current?.click();
   };
 
   const removeProfilePicture = async () => {
     if (formState.profileImage) {
       try {
-        await deleteFile(formState.profileImage);
+        await deleteFile();
         setFormState((prev) => ({ ...prev, profileImage: "" }));
       } catch (error) {
         setError('Failed to remove profile picture');

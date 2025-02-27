@@ -1,6 +1,7 @@
 // types/heightPermit.ts
 
 import { DocumentStatus } from "../helpers/enum";
+import { Project } from "./project";
 
 export interface Equipment {
   stepLadders: boolean;
@@ -35,6 +36,14 @@ export interface Environmental {
   otherEnvironmental?: string;
 }
 
+export interface ConfirmationStatus{
+  issuedTo?: boolean,
+  issuedBy?: boolean,
+  cancelledBy?:boolean,
+  signedOffBy?:boolean
+
+}
+
 export interface Authorization {
   issuedToName: string;
   issuedToSignature: string;
@@ -44,11 +53,29 @@ export interface Authorization {
   issuedByDate: string;
 }
 
+export interface CancellationOrCompletion {
+  cancelledByName?: string;
+  cancelledBySignature?: string;
+  cancelledByDate?: string;
+  cancellationReason?: string; 
+  cancellationDate?: string;
+  cancellationTime?: string;
+}
+
+export interface FinalSignOff{
+  signedOffByName:string;
+  signedOffBySignature:string;
+  signedOffByDate:string;
+}
+
 export interface HeightPermit extends Record<string, unknown> {
   _id?: string;
-  permitNumber: string;
+  permitNumber?: string;
+  issueDate?:string;
+  lastReviewedDate?:string;
+  nextReviewDate?:string;
   date: string;
-  site: string;
+  project: Project;
   location: string;
   contractor: string;
   phoneNumber: string;
@@ -61,14 +88,17 @@ export interface HeightPermit extends Record<string, unknown> {
   services: Services;
   controlMeasures: ControlMeasures;
   environmental: Environmental;
+  confirmationStatus:ConfirmationStatus;
   authorization: Authorization;
+  cancellation:CancellationOrCompletion;
+  finalSignOff:FinalSignOff;
   documentStatus: DocumentStatus;
 }
 
 export interface PermitFilters {
   search?: string;
   permitNumber?: string;
-  site?: string;
+  project?: string;
   contractor?: string;
   date?: string;
 }
