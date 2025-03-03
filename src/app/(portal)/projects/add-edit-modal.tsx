@@ -6,13 +6,13 @@ import type { Project } from "@/lib/types/project"
 import { createProject, updateProject } from "@/app/actions/projectActions"
 import { getContacts } from "@/app/actions/contactActions"
 import { Loader2 } from "lucide-react"
-import { ModalFooter, ModalHeader, ModalTitle } from "@/components/modal"
+import { ModalFooter} from "@/components/modal"
 import { useForm } from "@/hooks/useForm"
 import type { Contact } from "@/lib/types/contact"
 import { useFetch } from "@/hooks/useFetch"
 import { SearchableSelect } from "@/components/searchable-select"
 import { useEffect, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 
 interface ProjectFormProps {
   onClose: () => void

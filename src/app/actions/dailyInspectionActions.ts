@@ -1,11 +1,10 @@
 "use server";
 
-import { dailyInspectionFormSchema } from "@/lib/validations/dailyInspection";
-import type { DailyInspection, DailyInspectionFilters, DailyInspectionDay, DailyCheckItem } from "@/lib/types/dailyInspection";
+
+import type { DailyInspection, DailyInspectionFilters, DailyInspectionDay } from "@/lib/types/dailyInspection";
 import type { ActionState } from "@/lib/types/form";
 import type { FetchResult } from "@/lib/types/api";
 import { apiCall } from "@/lib/helpers/apiHelper";
-import { parseFormData } from "@/lib/helpers/formHelper";
 import { DocumentStatus } from "@/lib/helpers/enum";
 import { Project } from "@/lib/types/project";
 

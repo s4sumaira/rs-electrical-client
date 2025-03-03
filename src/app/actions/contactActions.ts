@@ -77,13 +77,13 @@ export async function updateContact(prevState: ActionState<Contact>, formData: F
         return {
           success: false,
           message: "Invalid documents format.",
-          error: "Documents must be a valid JSON array.",
+          error: "Documents must be a valid JSON array." ,
         };
       }
     }
 
    
-    const validatedFields = contactFormSchema.safeParse(rawEntries);
+    const validatedFields= contactFormSchema.safeParse(rawEntries);
 
     console.log(JSON.stringify(validatedFields.data));
 

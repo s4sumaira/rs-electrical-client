@@ -1,6 +1,6 @@
 "use server";
 
-import { heightPermitFormSchema } from "@/lib/validations/heightPermit";
+
 import type { HeightPermit, PermitFilters } from "@/lib/types/heightPermit";
 import { apiCall } from "@/lib/helpers/apiHelper";
 import type { ActionState } from "@/lib/types/form";

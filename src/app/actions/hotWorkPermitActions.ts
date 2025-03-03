@@ -123,7 +123,8 @@ export async function createHotWorkPermit(
           signature: formData.get("finalInspection.signature"),
           date: formData.get("finalInspection.date"),
           completedAfterHours: formData.get("finalInspection.completedAfterHours")
-        }
+        },
+        documentStatus:docStatus
       };
 
     // console.log(JSON.stringify(transformedData)) ;

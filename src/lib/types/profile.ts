@@ -44,6 +44,6 @@ export interface TabContentProps {
 }
 
 export interface ProfileFormProps {
-  contact: Contact | null;
+  //contact: Contact | null;
   onSave?: (data: Contact) => void;
 }

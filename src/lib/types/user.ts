@@ -10,7 +10,7 @@
     email: string;
     password?: string;
     confirmPassword?: string; 
-    role: Role;
+    role: Role | any;
     contact: string;
     isActive?: boolean;
     lastLogin?: Date;
