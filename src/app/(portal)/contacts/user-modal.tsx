@@ -25,15 +25,37 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
   const [passwordError, setPasswordError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
+  const [role, setRole] = useState<Role | null>(null);
+  const [roleOptions, setRoleOptions] = useState<Array<{ value: string; label: string }>>([]);
+
+
+  const initialValues: User = {
+    _id: currentUser?._id ?? "",
+    name: currentUser?.name ?? "",
+    email: currentUser?.email ?? "",
+    role: currentUser?.role ?? ({} as Role),
+    contact: currentUser?.contact ?? "",
+    password: "",
+    isActive: currentUser?.isActive ?? false
+  };
+
 
   useEffect(() => {
-    console.log('currentUser', currentUser);
-    async function fetchRoles() {
+
+    const fetchRoles = async () => {
+
       try {
 
         const roleData = await getRoles();
         if (Array.isArray(roleData)) {
           setRoles(roleData);
+
+          const formattedRoles = roleData.map(role => ({
+            value: role._id,
+            label: role.name
+          }));
+
+          setRoleOptions(formattedRoles);
         } else {
           setRoles([]);
         }
@@ -45,22 +67,24 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
     fetchRoles();
   }, []);
 
-  const roleOptions = useMemo(() => {
-    return roles.map((role) => ({
-      value: role._id,
-      label: role.name,
-    }))
-  }, [roles])
+  useEffect(() => {
+    if (roles.length && currentUser?.role) {
+      const selectedRole = roles.find(
+        (r) => r._id === currentUser.role?._id
+      );
 
-  const initialValues: User = {
-    _id: currentUser?._id ?? "",
-    name: currentUser?.name ?? "",
-    email: currentUser?.email ?? "",
-    role: currentUser?.role ?? undefined,
-    contact: currentUser?.contact ?? "",
-    password: "",
-    isActive: currentUser?.isActive ?? false
-  };
+
+
+      if (selectedRole) setRole(selectedRole);
+    }
+  }, [roles]);
+
+  // const roleOptions = useMemo(() => {
+  //   return roles.map((role) => ({
+  //     value: role._id,
+  //     label: role?.name,
+  //   }))
+  // }, [roles])
 
   const { formState, errors, isLoading, handleSubmit, getInputProps, setFormState, getSelectProps } = useForm<User>({
     initialValues: initialValues,
@@ -93,19 +117,23 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
     resetOnSuccess: !currentUser,
   });
 
-  // const handleRoleChange = (roleId: string) => {
-  //   const selectedRole = roles.find((role) => role._id === roleId);
-  //   if (selectedRole) {
-  //     setFormState((prev) => ({
-  //       ...prev,
-  //       role,
-  //     }));
-  //   }
-  // };
+  const handleRoleChange = (value: any) => {
+    const selectedRole = roles.find(r => r._id === value) || null;
+    setRole(selectedRole);
 
-  // useEffect(() => {
-  //   console.log("Updated role in formState:", formState.roleId);
-  // }, [formState.roleId]);
+    // Update form state with full project details if available
+    setFormState((prevState) => ({
+      ...prevState,
+      role: {
+        ...prevState.role,
+        _id: value
+      },
+
+    }));
+
+  };
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -118,7 +146,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
       <div className="flex-1 overflow-y-auto px-6">
         <form id="user-form" action={handleSubmit} className="space-y-6">
           {currentUser?._id && <input type="hidden" name="id" value={currentUser._id} />}
-          <input type="hidden" name="contactId" value={formState.contact} />
+       {/* <input type="hidden" name="contactId" value={formState.contact} /> */}
           <Input {...getInputProps("name")} className="hidden" />
 
           <Card>
@@ -138,11 +166,11 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
                 <div className="space-y-2">
                   <label htmlFor="role" className="text-sm font-medium">Role</label>
                   <SearchableSelect
-                    {...getSelectProps("role")}
-                    value={formState.role?._id ? formState.role._id : ""}
+                    {...getSelectProps("role._id")}
                     options={roleOptions}
+                    value={formState.role?._id || ""}
                     placeholder="Search roles..."
-                    onChange={(selected) => setFormState({ ...formState, role: roles.find(r => r._id === selected) || undefined })}
+                    onChange={handleRoleChange}
                   />
                   {errors.role && (
                     <p id="role-error" className="text-sm text-red-500">{errors.role}</p>

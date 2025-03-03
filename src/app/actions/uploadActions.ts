@@ -36,11 +36,9 @@ export async function DelBeforeSave(contactId:string){
 
 export async function uploadProfileImg(formData: FormData): Promise<ActionState<string>>{
 
-  const file = formData.get("file") as File;
- 
-
+  const file = formData.get("file") as File; 
   
-
+ 
   if (!file) return { success: false, message : " File not found",error: "No file provided"  };
 
   const contact = await getLoggedInUserContact() ;
@@ -52,6 +50,8 @@ export async function uploadProfileImg(formData: FormData): Promise<ActionState<
       error: "Contact not found.",
     }}
     else{
+
+      console.log('inside');
      
       try{
 
@@ -270,6 +270,53 @@ export async function getContactDocuments(): Promise<ActionState<ContactDocument
   }
 
   const contactId = contact?.data?._id;
+
+  const response = await apiCall<ContactDocument>(`/contactDocs/contact/${contactId}`);
+
+ 
+  if (response.success && Array.isArray(response.data)) {
+    
+    const documentsWithPresignedUrls = await Promise.all(
+      response.data.map(async (doc) => ({
+        ...doc,
+        presignedUrl: await generatePresignedUrl(doc.fileKey), 
+      }))
+    );
+
+    return { success: true, message: "Documents fetched successfully.", data: documentsWithPresignedUrls };
+  }
+   else {
+      return {
+        success: false,
+        message: "Failed to fetch contact documents. Please try again.",
+        error: response.error || "Unknown error occurred.",
+      
+      };   
+
+    
+  }
+ } catch (error) {
+    return {
+      success: false,
+      message: "An unexpected error occurred while fetching the contact documents.",
+      error: error instanceof Error ? error.message : "Unknown error.",
+    };
+  }
+}
+
+export async function getInductionDocuments(contactId:string): Promise<ActionState<ContactDocument[]>>  {
+  try {
+
+    
+
+  if (!contactId) {
+    return {
+      success: false,
+      message: "Contact not found.",
+      error: "Contact not found.",
+    };
+   
+  }
 
   const response = await apiCall<ContactDocument>(`/contactDocs/contact/${contactId}`);
 

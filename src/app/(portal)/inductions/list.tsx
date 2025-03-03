@@ -3,7 +3,7 @@ import { DataTable } from "@/components/data-table";
 import { getInductions } from "@/app/actions/inductionActions"; 
 import { useModal } from "@/hooks/useModal";
 import type { SiteInduction } from "@/lib/types/induction";
-import { InductionStatus } from "@/lib/types/induction";
+import { DocumentStatus } from "@/lib/helpers/enum"; 
 import { Modal, ModalContent, ModalHeader, ModalTitle } from "@/components/modal";
 import type { TableColumn, SortDirection } from "@/lib/types/table";
 import { useFetch } from "@/hooks/useFetch";
@@ -83,14 +83,14 @@ export const InductionList = () => {
           render: (value) => (
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${
-                value === InductionStatus.SUBMITTED
+                value === DocumentStatus.OPEN
                   ? "bg-yellow-200 text-black"
-                  : value === InductionStatus.APPROVED
+                  : value === DocumentStatus.REVIEWED
                     ? "bg-green-100 text-green-800"
                     : "bg-purple-100 text-red-500"
               }`}
             >
-              {value as InductionStatus}
+              {value as DocumentStatus}
             </span>
           ),
         },

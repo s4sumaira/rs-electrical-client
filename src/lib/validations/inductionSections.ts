@@ -163,8 +163,19 @@ export const complianceSchema = z.object({
 export const documentsSchema = z.object({
 
   documents:z.array( z.object({
-    _id:z.string(),
-    isSelected: z.boolean(),  
+    _id: z.string(),
+    fileName: z.string(),
+    fileType: z.string(),
+    fileSize: z.string().optional(),
+    fileKey: z.string().optional(),
+    url: z.string().optional(),
+    presignedUrl:z.string().optional(),
+    docType: z.string().optional(),
+    contact: z.string().optional(),
+    isArchived: z.boolean().optional(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+    isSelected: z.boolean().optional(), 
 
   })).optional(),
   

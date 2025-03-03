@@ -5,11 +5,7 @@ import type { HotWorkPermit ,PermitFilters} from "@/lib/types/hotWorkPermit";
 import type { ActionState } from "@/lib/types/form";
 import type { FetchResult } from "@/lib/types/api";
 import { apiCall } from "@/lib/helpers/apiHelper";
-// import { parseFormData } from "@/lib/helpers/formHelper";
-// import { StatusValues } from "@/lib/helpers/enum";
-// import { Project } from "@/lib/types/project";
-
-
+import { DocumentStatus } from "@/lib/helpers/enum";
 
 
 export async function createHotWorkPermit(
@@ -18,7 +14,35 @@ export async function createHotWorkPermit(
   ): Promise<ActionState<HotWorkPermit>> {
     try {
 
-    //  console.log(formData);
+      const contractorCnf = typeof formData.get("contractorConfirmation.name") === "string" 
+                              && (formData.get("contractorConfirmation.name") as string).trim().length > 0 || false;
+      const operatorCnf = typeof formData.get("operatorConfirmation.name") === "string" 
+                               && (formData.get("operatorConfirmation.name") as string).trim().length > 0 || false;
+      // const managementAuth = typeof formData.get("managementAuthorization.name") === "string" 
+      //                          && (formData.get("managementAuthorization.name") as string).trim().length > 0 || false;    
+      
+      const operatorCans = typeof formData.get("operatorCancellation.name") === "string" 
+                               && (formData.get("operatorCancellation.name") as string).trim().length > 0 || false;
+
+      const managementCancs = typeof formData.get("managementCancellation.name") === "string" 
+                                && (formData.get("managementCancellation.name") as string).trim().length > 0 || false;
+      
+      const finalInspection = typeof formData.get("finalInspection.name") === "string" 
+                                 && (formData.get("finalInspection.name") as string).trim().length > 0 || false;
+      
+   
+      let docStatus = DocumentStatus.DRAFT;
+        if( contractorCnf && operatorCnf){
+          docStatus= DocumentStatus.OPEN;
+        }
+        else if (operatorCans && managementCancs){
+          docStatus= DocumentStatus.COMPLETED;
+        }
+        else if (finalInspection){
+          docStatus= DocumentStatus.FINALISED;
+        }
+      
+
       const transformedData = {     
         project: formData.get("project._id"),
         companyName: formData.get("companyName"),

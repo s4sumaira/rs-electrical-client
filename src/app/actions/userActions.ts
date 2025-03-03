@@ -7,7 +7,19 @@ import type { ActionState } from "@/lib/types/form"
 export async function createUser(prevState: ActionState<User>, formData: FormData): Promise<ActionState<User>> {
   try {
     const rawEntries = Object.fromEntries(formData)
-    const validatedFields = createUserFormSchema.safeParse(rawEntries)  
+
+    const { "role._id": roleId, ...rest } = rawEntries;
+    const processedEntries = {
+      ...rest,
+      role: roleId || rawEntries.role,
+    };
+
+   
+    console.log("Processed entries:", JSON.stringify(processedEntries));
+
+    const validatedFields = createUserFormSchema.safeParse(processedEntries);
+
+    
 
     if (!validatedFields.success) {
       return {
@@ -16,8 +28,9 @@ export async function createUser(prevState: ActionState<User>, formData: FormDat
         data: prevState.data,
         error: validatedFields.error.flatten().fieldErrors,
       }
-    }   
-
+    }  
+    
+   
     const response = await apiCall<User>("/users", {
       method: "POST",
       body: JSON.stringify(validatedFields.data),
@@ -55,13 +68,26 @@ export async function updateUser(prevState: ActionState<User>, formData: FormDat
     }
 
 
+   //formData.set("role",formData.get("role._id"))
+ // Create a transformed data object with the correct structure
+ const rawData = Object.fromEntries(formData);
+ console.log("Raw form data:", rawData);
+ 
+ // Transform the data to match your schema
+ const transformedData = {
+   id: rawData.id,
+   name: rawData.name,
+   email: rawData.email,
+   password: rawData.password,
+   // Use role._id as the role value since your schema expects a string
+   role: rawData['role._id'],
+   contact: rawData.contact || rawData.contactId, // Use whichever is available
+   isActive: rawData.isActive
+ };
+ 
+ console.log("Transformed data:", transformedData);
 
-    const rawData = Object.fromEntries(formData)   
-    console.log(rawData);
-
-    const validatedFields = updateUserFormSchema.safeParse(rawData)
-
-    console.log("validatedFields",validatedFields.data);
+ const validatedFields = updateUserFormSchema.safeParse(transformedData);
     if (!validatedFields.success) {
       return {
         success: false,

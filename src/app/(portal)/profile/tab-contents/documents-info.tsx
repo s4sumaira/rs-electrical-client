@@ -11,10 +11,10 @@ interface DocumentsInfoProps extends TabContentProps {
 }
 
 export const DocumentsInfo: React.FC<DocumentsInfoProps> = ({
-  formState,
-  handleFileUpload,
-  documentName,
-  setFormState,
+  // formState,
+  // handleFileUpload,
+  // documentName,
+  // setFormState,
 }) => {
   const [documents, setDocuments] = useState<ContactDocument[]>([]);
   const [error, setError] = useState<string | null>("");

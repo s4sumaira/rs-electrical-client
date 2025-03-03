@@ -3,10 +3,10 @@
 //import { inductionFormSchema } from "@/lib/validations/induction"; 
 import { sectionSchemas } from "@/lib/validations/inductionSections";
 import type { SiteInduction, SiteInductionFilters } from "@/lib/types/induction";
-import { InductionStatus } from "@/lib/types/induction";
 import { apiCall } from "@/lib/helpers/apiHelper";
 import type { ActionState } from "@/lib/types/form";
 import type { FetchResult, ApiResponse } from "@/lib/types/api";
+import { DocumentStatus } from "@/lib/helpers/enum";
 
 export async function saveInduction(
   sectionIndex: number, 
@@ -179,7 +179,7 @@ export async function handleInductionSubmit(
     // Prepare the data for API
     const payload = {
       ...validatedSection.data,
-      status: submissionType === 'submit' ? 'SUBMITTED' as InductionStatus : 'DRAFT' as InductionStatus,
+      status: submissionType === 'submit' ? DocumentStatus.OPEN  : DocumentStatus.DRAFT,
       lastUpdatedSection: currentSection,
     };
 

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { ModalFooter } from "@/components/modal";
 import { Contact } from "@/lib/types/contact";
 import { useForm } from "@/hooks/useForm";
 import { uploadProfileImg, deleteFile } from "@/app/actions/uploadActions";
@@ -12,6 +12,7 @@ import { ProfileTabs } from "./tabs";
 import { PersonalInfo, ContactInfo, EmploymentInfo, DocumentsInfo } from "./tab-contents";
 import { initialValues } from "@/app/(portal)/profile/constants";
 import type { ProfileFormProps } from "@/lib/types/profile";
+import type { ActionState } from "@/lib/types/form";
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -20,6 +21,25 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
   const [contact, setContact] = useState<Contact | null>(null);
+
+  const [saving, setSaving] = useState(false);
+  const [displayProfileUrl, setDisplayProfileUrl] = useState<string>("");
+
+
+  const customSubmitAction = async (state: ActionState<Contact>, formData: FormData): Promise<ActionState<Contact>> => {
+    setSaving(true);
+    try {
+
+      formData.delete("documents");
+      formData.delete("files");
+
+      const result = await updateContact(state, formData);
+
+      return result;
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const {
     formState,
@@ -31,11 +51,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     setFormState,
   } = useForm<Contact>({
     initialValues: contact ?? initialValues,
-    submitAction: async (state, formData) => {
-      return updateContact(state, formData);
-    },
-    onSuccess: (data, message) => {
+    submitAction: customSubmitAction,
+    onSuccess: async (data, message) => {
       onSave?.(data);
+
+      await fetchUserData();
     },
     onError: (error) => {
       console.error(error);
@@ -43,40 +63,56 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     },
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!contact) {
-        try {
-          setLoading(true);
-          const result = await getLoggedInUserContact();
-          if (result.success && result.data) {
-            setContact(result.data);
-            setError(null);
-          } else {
-            setError(result.message || 'Failed to fetch user data');
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          setError('An unexpected error occurred');
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
 
+  const handleTabChange = (tabName: string) => {
+
+    setActiveTab(tabName);
+  };
+
+
+  const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();     
+    const formData = new FormData();   
+    handleSubmit(formData);
+  };
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const result = await getLoggedInUserContact();
+      if (result.success && result.data) {
+        if (result.data.profileImage) {
+          setDisplayProfileUrl(result.data.profileImage);
+        }
+        setContact(result.data);
+
+        console.log('Contact after saving', contact);
+
+        setError(null);
+      } else {
+        setError(result.message || 'Failed to fetch user data');
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUserData();
-  }, [contact]);
+  }, []);
 
   useEffect(() => {
     if (contact) {
       const formattedContact = {
         ...contact,
-        birthDate: contact.birthDate 
+        birthDate: contact.birthDate
           ? new Date(contact.birthDate).toLocaleDateString('en-GB').split('/').join('/')
-          : "",
+          : "",       
       };
+
       setFormState(formattedContact);
     }
   }, [contact, setFormState]);
@@ -86,38 +122,40 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     type: "profile" | "document"
   ) => {
     const file = event.target.files?.[0];
-  if (!file) return;
+    if (!file) return;
 
-  if (type === "profile") {
+    if (type === "profile") {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
 
-    try {
-      const formData = new FormData();
-    formData.append("file", file);
-    
-      const response = await uploadProfileImg(formData); 
+        console.log('Form Data', formData);
 
-      if (!response?.success) {
-        console.error("Upload failed:", response?.message);
-        return;
+        const response = await uploadProfileImg(formData);
+
+        if (!response?.success) {
+          console.error("Upload failed:", response?.message);
+          return;
+        }
+
+        if (response?.data) {
+         
+          setFormState((prev) => ({
+            ...prev,
+            profileImage: response?.data as any,
+          }));
+
+         
+        } else {
+          console.warn("No profileImage returned from uploadProfileImg.");
+        }
+      } catch (err) {
+        console.error("Profile image upload failed:", err);
       }
-
-      if (response?.data) {
-        setFormState((prev) => ({
-          ...prev,
-          profileImage: response?.data as any, 
-        }));
-      } else {
-        console.warn("No profileImage returned from uploadProfileImg.");
-      }
-    } catch (err) {
-      console.error("Profile image upload failed:", err);
     }
-  } 
-    
   };
 
   const triggerFileInput = () => {
-    console.log('File input triggered');
     fileInputRef.current?.click();
   };
 
@@ -126,6 +164,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
       try {
         await deleteFile();
         setFormState((prev) => ({ ...prev, profileImage: "" }));
+        // Also update the original profile image reference
+        // setOriginalProfileImage("");
       } catch (error) {
         setError('Failed to remove profile picture');
       }
@@ -153,7 +193,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
           <DocumentsInfo
             {...commonProps}
             handleFileUpload={handleFileUpload}
-            documentName={documentName}           
+            documentName={documentName}
           />
         );
       default:
@@ -173,43 +213,68 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     );
   }
 
+  const showSaveButton = activeTab !== "documents";
+
+  const displayFormState = {
+    ...formState,
+    // Use the presigned URL for display if available, otherwise fall back to the key
+    profileImage: displayProfileUrl || formState.profileImage
+  };
+
   return (
-    <form action={handleSubmit} className="w-full space-y-6 p-4">
-      <div className="max-w-[1400px] mx-auto w-full">
-        <input type="hidden" {...getInputProps("_id")} />
-        
-        <ProfileHeader
-          formState={formState}
-          fileInputRef={fileInputRef}
-          handleFileUpload={handleFileUpload}
-          removeProfilePicture={removeProfilePicture}
-          triggerFileInput={triggerFileInput}
-        />
-        
-        <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        
-        <div className="w-full">
-          {renderTabContent()}
+    <>
+      {/* Use onSubmit={e => e.preventDefault()} to prevent form submission */}
+      <form
+        id="profile-form"
+        className="w-full space-y-6 p-4"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <div className="max-w-[1400px] mx-auto w-full">
+          <input type="hidden" {...getInputProps("_id")} />
+
+          <ProfileHeader
+            formState={displayFormState}
+            fileInputRef={fileInputRef}
+            handleFileUpload={handleFileUpload}
+            removeProfilePicture={removeProfilePicture}
+            triggerFileInput={triggerFileInput}
+          />
+
+          {/* Pass the custom handler to ProfileTabs */}
+          <ProfileTabs
+            activeTab={activeTab}
+            setActiveTab={handleTabChange}
+          />
+
+          <div className="w-full">
+            {renderTabContent()}
+
+          </div>
+          {showSaveButton && (
+            <ModalFooter>
+              <Button
+                type="button"
+                id="btnSaveProfile"
+                onClick={handleSave}
+                disabled={isLoading || saving}
+                className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
+              >
+                {isLoading || saving ? (
+                  <div className="flex items-center space-x-2">
+                    <span className="animate-spin">⏳</span>
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </ModalFooter>
+          )}
         </div>
 
-        <div className="flex justify-end space-x-4 pt-6">
-          <Button 
-            type="submit" 
-            className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Saving...</span>
-              </div>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+
+    </>
   );
 };
 

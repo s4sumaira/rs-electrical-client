@@ -6,7 +6,8 @@ export enum DocumentStatus {
     APPROVED='APPROVED',
     CANCELLED='CANCELLED',
     COMPLETED ='COMPLETED',
-    FINALISED='FINALISED'
+    FINALISED='FINALISED',
+    OPEN='OPEN,'
   }
 
   export enum StatusValues{

@@ -28,7 +28,7 @@ export const createUserFormSchema = z
       (val) => !val || /[0-9]/.test(val),
       { message: "Password must contain at least one number" }
     ),    
-    role: z.string().min(1, "Please select a valid role"),
+    role:  z.string().min(1, "Please select role"),  
     contact: z.string().min(1, "Contact ID is required"),
     isActive: z
     .union([z.boolean(), z.string()])

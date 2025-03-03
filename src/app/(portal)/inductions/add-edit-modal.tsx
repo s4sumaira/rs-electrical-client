@@ -4,7 +4,8 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import toast from "react-hot-toast"
-import { type SiteInduction,  InductionStatus} from "@/lib/types/induction"
+import { type SiteInduction} from "@/lib/types/induction"
+import { DocumentStatus } from "@/lib/helpers/enum"
 import { PersonalInfoSection } from "./sections/personal-info-section"
 import { OccupationalHealthSection } from "./sections/occupational-health-section"
 import { ComplianceSection } from "./sections/compliance-section"
@@ -72,6 +73,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
   const{hasRole, hasPermission} = useAuth()
 
   const isEditMode = Boolean(currentInduction?._id)
+ 
   const {
     currentSection: CurrentSection,
     currentSectionIndex,
@@ -90,6 +92,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
     initialValues: currentInduction || initialInductionState,
     sections: formSections.map(section => section.component),
     validate: async (sectionIndex, data) => {
+     
       return sectionSchemas[sectionIndex].safeParse(data)
     },
     isValid: (result) => result.success,
@@ -119,11 +122,12 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
       console.error('Induction error:', error)
       toast.error("An error occurred while saving the induction")
     },
+    
   })
 
   const handleStatusChange = async () => {
     if (!currentInduction?._id) {
-      toast.error("No induction selected for approval.");
+      toast.error("No induction selected for review.");
       return;
     }   
   
@@ -131,15 +135,15 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
       const response = await approveInduction(currentInduction._id);
   
       if (response.success) {
-        toast.success("Induction approved successfully!");
+        toast.success("Induction reviewed successfully!");
         onComplete?.()
         onClose()
       } else {
-        toast.error(response.message || "Failed to approve induction.");
+        toast.error(response.message || "Failed to review induction.");
       }
     } catch (error) {
       console.error("Approval error:", error);
-      toast.error("An error occurred while approving the induction.");
+      toast.error("An error occurred while reviewing the induction.");
     }
   };
   
@@ -182,7 +186,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
               Cancel
             </Button>
             
-            {hasPermission(Permissions.CREATE_INDUCTION)&&  currentInduction?.status != InductionStatus.APPROVED && (<Button
+            {hasPermission(Permissions.CREATE_INDUCTION)&&  currentInduction?.status != DocumentStatus.REVIEWED && (<Button
               type="submit"
               className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
               disabled={isLoading || isSaving}
@@ -191,13 +195,13 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
             </Button>)
             }
 
-            {hasPermission(Permissions.APPROVE_INDUCTION) && currentInduction?.status != InductionStatus.APPROVED && (<Button
+            {hasPermission(Permissions.APPROVE_INDUCTION) && currentInduction?.status != DocumentStatus.REVIEWED && (<Button
             type="button"
               className="bg-green-600 hover:bg-green-800 text-btn-add-fg"
               disabled={isLoading || isSaving}
                onClick={handleStatusChange}
             >
-              {isLoading || isSaving ? "Approving..." : "Approve"}
+              {isLoading || isSaving ? "Reviewing..." : "Review"}
             </Button>)}
           </div>
         </form>

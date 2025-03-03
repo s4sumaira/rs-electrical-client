@@ -11,7 +11,7 @@ import type { TableColumn, SortDirection } from "@/lib/types/table";
 import toast from "react-hot-toast";
 import { useFetch } from "@/hooks/useFetch";
 import { Pagination } from "@/components/pagination";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { ListHeader } from "@/components/list-header";
 import { FilterModal } from "./filter-modal";
 import { FilterBadges } from "@/components/filter-badges";

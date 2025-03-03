@@ -2,9 +2,10 @@ import type React from "react"
 import type { SiteInduction } from "@/lib/types/induction"
 import { ContactDocument } from "@/lib/types/contact";
 import { useEffect, useState } from "react";
-import { getContactDocuments } from "@/app/actions/uploadActions";
+import { getContactDocuments ,getInductionDocuments} from "@/app/actions/uploadActions";
 import { useAuth } from '@/hooks/useAuth'
 import { Card,CardContent } from "@/components/ui/card";
+import { DocumentStatus } from "@/lib/helpers/enum";
 
 interface SectionProps {
   formState: SiteInduction
@@ -16,56 +17,101 @@ interface SectionProps {
 
 export function DocumentsSection({ formState, errors, setFormState }: SectionProps) {
 
-  const [documents, setDocuments] = useState<ContactDocument[]>([]);
+  const [documents, setDocuments] = useState<ContactDocument[]>(formState.documents ||[]);
   const [error, setError] = useState<string | null>("");
   const [savedDocument, setSavedDocument] = useState<ContactDocument | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set())
-  const { login,user } = useAuth();
+  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(() => {
+    const initialSet = new Set(
+      (formState.documents || [])
+        .filter((doc): doc is ContactDocument => !!doc._id)
+        .map(doc => doc._id)
+        .filter((id): id is string => id !== undefined)
+    );
+    
+    return initialSet;
+});
+  const { user } = useAuth();
+
  
-  const hasApprovePermission = user?.permissions.includes('INDUCTION.APPROVE');
+  const hasApprovePermission = user?.permissions?.includes('INDUCTION.APPROVE');
+
 
   useEffect(() => {
     async function fetchDocuments() {
-
-      const result = await getContactDocuments();
-      if (result.success) {
-        let docs = (result.data as ContactDocument[]).map(doc => ({
-          ...doc,
-          isSelected: false, 
-        }));
-
-        const savedDocs = formState.documents ?? [];
-        const savedIdsSet = new Set(savedDocs.map(doc => doc._id).filter(Boolean));   
-       
-        if (hasApprovePermission) {
-          docs = docs.filter(doc => savedIdsSet.has(doc._id)); 
-        } else {
-          docs = docs.map(doc => ({
-            ...doc,
-            isSelected: savedIdsSet.has(doc._id),
-          }));
-        }
-  
-        // Update state with new documents
-        setDocuments(docs);  
-      
-        setSelectedDocuments(new Set(savedIdsSet));     
-
+      let docs= {} as ContactDocument[];
      
 
-      } else {
-        setError(result.message);
-      }
+  if(Boolean(formState?._id))
+    {
+
+    
+    const contactId = formState.inductedPerson._id;
+   
+    let res = await getInductionDocuments(contactId);
+   
+
+    if (res.success) {
+      docs = (res.data as any[]).map(doc => {
+       
+        return {
+          _id: doc._id,
+          url: doc.url,
+          contact: doc.contact,
+          fileName: doc.fileName,
+          fileType: doc.fileType,
+          fileSize: doc.fileSize,
+          docType: doc.docType,
+          fileKey: doc.fileKey,
+          description: doc.description,
+          presignedUrl: doc.presignedUrl, 
+          isSelected: false,
+        } as ContactDocument;
+      });
+       }       
+
+        const savedDocs = formState.documents ?? [];      
+
+        const savedIdsArray = savedDocs.map(doc => doc._id).filter(Boolean) as string[];
+        const savedIdsSet = new Set(savedIdsArray);            
+             
+         
+         if (hasApprovePermission) {
+           docs = docs.filter(doc => doc._id && savedIdsSet.has(doc._id));
+          
+         } else {
+           docs = docs.map(doc => ({
+             ...doc,
+             isSelected: doc._id ? savedIdsSet.has(doc._id) : false,
+           }));
+         }
+
+       
+          setSelectedDocuments(new Set(savedIdsSet)); 
+      
+    }
+      else{
+        const result = await getContactDocuments();
+        if (result.success) {
+          docs = (result.data as ContactDocument[]).map(doc => ({
+            ...doc,
+            isSelected: false, 
+          }));
+      } 
+    } 
+
+      setDocuments(docs); 
     }
     fetchDocuments();
-  }, []);
+  }, [formState.documents]);
 
-  const handlePreview = (doc: ContactDocument) => {
+
+  const handlePreview = async (doc: ContactDocument) => {
+
     setSavedDocument(doc);
     setIsModalOpen(true);
   };
-
+ 
   const closeModal = () => {
     setIsModalOpen(false);
     setSavedDocument(null);
@@ -73,24 +119,20 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
 
   
   useEffect(() => {
+   
 
+    const selectedIdsSet = new Set(Array.from(selectedDocuments).filter(Boolean));
+    const updatedDocs = documents.map(doc => ({
+      ...doc,    
+      isSelected: doc._id ? selectedIdsSet.has(doc._id) : false,
+    }));
     
-    setFormState((prevState) => {
-    
-      const selectedIdsSet = new Set(Array.from(selectedDocuments).filter(Boolean));
-    
-      const updatedDocs = documents.map((doc) => ({
-        ...doc,
-        isSelected: doc._id ? selectedIdsSet.has(doc._id) : false,  
-      }));
+    setFormState(prevState => ({
+      ...prevState,
+      documents: updatedDocs,
+    }));
 
-     
-  
-      return {
-        ...prevState,
-        documents: updatedDocs, 
-      };
-    });
+   
 
   }, [selectedDocuments, documents, setFormState]);
 
@@ -134,7 +176,7 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
   
 
   const shouldHideCheckboxes =
-  formState.inductionStatus === "approved" || hasApprovePermission
+  formState.inductionStatus === DocumentStatus.REVIEWED|| hasApprovePermission
   
 
     return (
@@ -167,6 +209,7 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
                   </thead>
                   <tbody>
                     {documents.map((doc, index) => (
+                    
                       <tr key={doc._id}  
                       className="border-t text-sm font-sm border-gray-200 dark:border-gray-600 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
                          {!shouldHideCheckboxes && (
@@ -183,7 +226,7 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
                       )}
                         <td className="border px-4 py-2">{doc.docType}</td>
                         <td className="border px-4 py-2">{doc.fileName}</td>
-                        <td className="border px-4 py-2">
+                        <td className="border px-4 py-2">                        
                           <a
                             onClick={() => handlePreview(doc)}
                             className="text-blue-600 hover:underline"
@@ -205,9 +248,7 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
          
         )}
 
-
-        {/* Preview Modal */}
-        {isModalOpen && savedDocument && (
+{isModalOpen && savedDocument && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full h-[80vh] flex flex-col">
 
@@ -234,7 +275,9 @@ export function DocumentsSection({ formState, errors, setFormState }: SectionPro
 
             </div>
           </div>
-        )}
+        )} 
+       
+     
 
       </div>
     )

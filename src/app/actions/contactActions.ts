@@ -25,7 +25,7 @@ export async function createContact(prevState:ActionState<Contact>,formData: For
         error: validatedFields.error.flatten().fieldErrors,
       
       };
-    }
+    }   
 
     const response = await apiCall<Contact>("/contacts", {
       method: "POST",
@@ -81,7 +81,11 @@ export async function updateContact(prevState: ActionState<Contact>, formData: F
         };
       }
     }
+
+   
     const validatedFields = contactFormSchema.safeParse(rawEntries);
+
+    console.log(JSON.stringify(validatedFields.data));
 
     if (!validatedFields.success) {
       return {
@@ -90,11 +94,6 @@ export async function updateContact(prevState: ActionState<Contact>, formData: F
         error: validatedFields.error.flatten().fieldErrors,
       };
     }
-
-    
-//console.log('fields validated',validatedFields.data);
-
-
 
     const response = await apiCall<Contact>(`/contacts/${id}`, {
       method: "PATCH",
@@ -222,8 +221,7 @@ export async function getContact(id: string): Promise<ActionState<Contact>> {
 export async function getLoggedInUserContact(): Promise<ActionState<Contact>> {
   try {
 
-    const response = await apiCall<Contact>('/contacts/loggedInUser');
-    //console.log(response)
+    const response = await apiCall<Contact>('/contacts/loggedInUser');   
 
     if (!response.success) {
       return {
@@ -234,12 +232,12 @@ export async function getLoggedInUserContact(): Promise<ActionState<Contact>> {
       };
     }
 
-    const contact = response.data as Contact;
-    //let profileImageUrl: string | undefined;
+    const contact = response.data as Contact;  
 
     if (contact.profileImage) {
       try {
         contact.profileImage = await generatePresignedUrl(contact.profileImage);
+       
       } catch (urlError) {
         console.error("Failed to generate presigned URL:", urlError);
       }
@@ -250,8 +248,7 @@ export async function getLoggedInUserContact(): Promise<ActionState<Contact>> {
       message: "Contact fetched successfully.", 
       data: contact
     };
-
-   // return { success: true, message: "Contact fetched successfully.", data: response.data as Contact};
+  
   } catch (error) {
     return {
       success: false,

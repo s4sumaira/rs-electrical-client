@@ -5,7 +5,7 @@ import { checkInAction, checkOutAction } from "@/app/actions/attendanceActions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Lock, StickyNote, CheckCircle } from "lucide-react";
+import { User, Lock, StickyNote } from "lucide-react";
 
 export function CheckInOutForm() {
   const [formState, setFormState] = useState({

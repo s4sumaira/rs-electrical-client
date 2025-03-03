@@ -1,12 +1,13 @@
 import { ContactDocument } from "./contact" 
+import { DocumentStatus } from "../helpers/enum"
 
-export enum InductionStatus {
-    DRAFT = "DRAFT",
-    SUBMITTED = "SUBMITTED",
-    IN_REVIEW = "IN_REVIEW",
-    APPROVED = "APPROVED",
-    REJECTED = "REJECTED",
-  }
+// export enum InductionStatus {
+//     DRAFT = "DRAFT",
+//     SUBMITTED = "SUBMITTED",
+//     IN_REVIEW = "IN_REVIEW",
+//     APPROVED = "APPROVED",
+//     REJECTED = "REJECTED",
+//   }
   
   interface Contact {
     _id: string
@@ -79,11 +80,11 @@ export enum InductionStatus {
     emergencyContact: EmergencyContact 
     rightToWorkInUK: boolean
     rightToWorkDetails?: string
-    status: InductionStatus
+    status: DocumentStatus
     occupationalHealth: OccupationalHealth
     compliance: Compliance
     riskAssessment: RiskAssessment
-    documents?: ContactDocument[] |any[]
+    documents?: ContactDocument[] 
     //statusHistory: StatusHistoryEntry[]
     inductionCompleted: boolean
     confirmation?: Confirmation
@@ -93,7 +94,7 @@ export enum InductionStatus {
   // Update the initial state type to match the new structure
   export const initialInductionState: SiteInduction = {
     _id: "",
-    status: InductionStatus.SUBMITTED,
+    status: DocumentStatus.OPEN,
     inductionNumber: "",
     project: { _id:"",name: "" },
     inductedPerson: { _id: "", fullName: "" },
@@ -119,10 +120,11 @@ export enum InductionStatus {
       isUnder18: false,
       hasOtherQualifications:false
     },
+    documents: [],
     riskAssessment: {
       briefed: false,
       understood: false,
-    },
+    },   
     trade:"",
     inductionCompleted: false,
   }
@@ -130,7 +132,7 @@ export enum InductionStatus {
   
   export interface SiteInductionFilters {
       search?: string;
-      status?: InductionStatus;
+      status?: DocumentStatus;
       projectName?: string;
       inductionNumber?: string;
       inductedBy?: string;

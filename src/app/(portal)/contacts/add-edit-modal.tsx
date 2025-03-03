@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { ModalFooter } from "@/components/modal";
 import { useForm } from "@/hooks/useForm";
 import { SearchableSelect } from "@/components/searchable-select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ContactFormProps {
   onClose: () => void;

@@ -19,7 +19,7 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema)
   })
 
-  const { login,user } = useAuth();
+  const { login } = useAuth();
 
   const onSubmit = async (data: LoginFormValues) => {
 

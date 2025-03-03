@@ -3,7 +3,7 @@ import { User, Briefcase, Building, Mail, Phone, Camera, Trash2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileHeaderProps } from "@/lib/types/profile";
-import { ProfileImage } from "@/components/profile-image"; 
+
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
   formState, 
@@ -14,6 +14,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 }) => (
   <Card className="mb-6 w-full">
     <CardContent className="p-6">
+     
       <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
         <div className="relative w-32 h-32 rounded-full overflow-hidden bg-secondary group">
           {formState.profileImage ? (

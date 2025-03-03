@@ -21,7 +21,7 @@ export async function saveHeightPermit(
 
     let docStatus = DocumentStatus.DRAFT;
     if( issuedTo && issuedBy && !cancelledBy){
-      docStatus= DocumentStatus.SUBMITTED;
+      docStatus= DocumentStatus.OPEN;
     }
     else if (issuedTo && issuedBy && cancelledBy){
       docStatus= DocumentStatus.COMPLETED;
@@ -105,7 +105,7 @@ export async function saveHeightPermit(
       },
       documentStatus: docStatus,
     };
-    console.log(JSON.stringify(transformedData));
+    //console.log(JSON.stringify(transformedData));
     if (!formData.get('_id')) {
 
       const response = await apiCall<HeightPermit>("/heightworkpermit", {

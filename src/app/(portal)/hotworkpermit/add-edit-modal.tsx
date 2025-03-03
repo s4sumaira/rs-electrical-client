@@ -6,7 +6,6 @@ import { ModalFooter } from '@/components/modal';
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SearchableSelect } from "@/components/searchable-select"
-import { SearchableSelectProps } from "@/lib/types"
 import SignaturePad from "react-signature-canvas";
 import { useForm } from "@/hooks/useForm";
 import { HotWorkPermit, WorkIncludes } from "@/lib/types/hotWorkPermit";
@@ -627,10 +626,12 @@ export function HotWorkPermitForm({
                                         <Input
                                             {...getInputProps("managementAuthorization.name")}
                                             placeholder="Name"
+                                            required={false}
                                         />
                                         <Input
                                             {...getInputProps("managementAuthorization.position")}
                                             placeholder="Position"
+                                            required={false}
                                         />
                                     </div>
                                     <div className="rounded-md p-2">
@@ -665,10 +666,12 @@ export function HotWorkPermitForm({
                                         <Input
                                             {...getInputProps("operatorCancellation.name")}
                                             placeholder="Name"
+                                            required={false}
                                         />
                                         <Input
                                             {...getInputProps("operatorCancellation.position")}
                                             placeholder="Position"
+                                            required={false}
                                         />
                                     </div>
                                     <div className="rounded-md p-2">
@@ -703,10 +706,12 @@ export function HotWorkPermitForm({
                                         <Input
                                             {...getInputProps("managementCancellation.name")}
                                             placeholder="Name"
+                                            required={false}
                                         />
                                         <Input
                                             {...getInputProps("managementCancellation.position")}
                                             placeholder="Position"
+                                            required={false}
                                         />
                                     </div>
                                     <div className="rounded-md p-2">
@@ -741,16 +746,19 @@ export function HotWorkPermitForm({
                                         <Input
                                             {...getInputProps("finalInspection.name")}
                                             placeholder="Name"
+                                            required={false}
                                         />
                                         <Input
                                             {...getInputProps("finalInspection.position")}
                                             placeholder="Position"
+                                            required={false}
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 gap-4">
                                         <Input
                                             {...getInputProps("finalInspection.completedAfterHours")}
                                             placeholder="Completed After Hours"
+                                            required={false}
                                         />
                                     </div>
                                     <div className="rounded-md p-2">

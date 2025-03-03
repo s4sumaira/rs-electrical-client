@@ -181,7 +181,7 @@ export const FileUploader: React.FC<{ refreshDocuments: () => void }> = ({ refre
           <Upload className="w-5 h-5 mr-2" />
           Select Files
         </button>
-        <button
+        {/* <button
           type="button"
           onClick={openCamera}
           className="flex items-center px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
@@ -190,7 +190,7 @@ export const FileUploader: React.FC<{ refreshDocuments: () => void }> = ({ refre
         >
           <Camera className="w-5 h-5 mr-2" />
           Take Photo
-        </button>
+        </button> */}
         <input
           ref={fileInputRef}
           type="file"

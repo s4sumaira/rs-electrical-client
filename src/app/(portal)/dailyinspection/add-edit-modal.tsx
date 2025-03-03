@@ -314,8 +314,7 @@ export function DailyInspectionForm({
            
           </CardContent>
         </Card>
-        </form>
-                   <ModalFooter>
+        <ModalFooter>
                    <Button
                        type="button"
                        onClick={onClose}
@@ -332,6 +331,8 @@ export function DailyInspectionForm({
                        {isLoading ? "Saving..." : (currentInspection ? "Update" : "Save")}
                    </Button>
                </ModalFooter> 
+        </form>
+                   
                 </>
       );
 }
