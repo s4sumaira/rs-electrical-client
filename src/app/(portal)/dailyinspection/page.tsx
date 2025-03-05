@@ -1,7 +1,7 @@
 
 import { DailyInspectionList } from "@/app/(portal)/dailyinspection/list" 
 
-export default function ContactsPage() {
+export default function DailyInspectionPage() {
   return (
    <DailyInspectionList></DailyInspectionList>
   )

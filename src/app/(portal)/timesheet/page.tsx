@@ -1,7 +1,7 @@
 
 import {AttendanceList} from "./list"
 
-export default function ContactsPage() {
+export default function AttendancePage() {
   return (
    <AttendanceList></AttendanceList>
   )

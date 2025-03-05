@@ -1,7 +1,7 @@
 
 import { HotWorkPermitList } from "./list" 
 
-export default function ContactsPage() {
+export default function HotWorkPermitPage() {
   return (
    <HotWorkPermitList></HotWorkPermitList>
   )

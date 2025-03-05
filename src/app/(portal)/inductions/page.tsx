@@ -1,7 +1,7 @@
 
 import { InductionList } from "./list"  
 
-export default function ContactsPage() {
+export default function InductionPage() {
   return (
     
       <InductionList />

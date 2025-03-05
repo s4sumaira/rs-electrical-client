@@ -1,7 +1,7 @@
 
 import { ProjectList } from "./list"  
 
-export default function ContactsPage() {
+export default function ProjectPage() {
   return (
    
       <ProjectList />
