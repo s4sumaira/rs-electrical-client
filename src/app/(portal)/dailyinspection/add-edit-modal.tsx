@@ -314,6 +314,7 @@ export function DailyInspectionForm({
            
           </CardContent>
         </Card>
+        </form>
         <ModalFooter>
                    <Button
                        type="button"
@@ -324,14 +325,14 @@ export function DailyInspectionForm({
                    </Button>
                    <Button
                        type="submit"
-                       form="height-permit-form"
+                       form="daily-inspection-form"
                        disabled={isLoading}
                        className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
                    >
                        {isLoading ? "Saving..." : (currentInspection ? "Update" : "Save")}
                    </Button>
                </ModalFooter> 
-        </form>
+       
                    
                 </>
       );

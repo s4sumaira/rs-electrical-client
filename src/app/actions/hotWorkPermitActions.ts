@@ -127,7 +127,7 @@ export async function createHotWorkPermit(
         documentStatus:docStatus
       };
 
-    // console.log(JSON.stringify(transformedData)) ;
+     //console.log(JSON.stringify(transformedData)) ;
     if (!formData.get('_id')) {
       const response = await apiCall<HotWorkPermit>("/hotworkpermit", {
         method: "POST",

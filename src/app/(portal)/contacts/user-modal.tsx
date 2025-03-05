@@ -143,7 +143,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
     <>
 
 
-      <div className="flex-1 overflow-y-auto px-6">
+      <div className="flex-1 overflow-y-auto px-6 min-h-80">
         <form id="user-form" action={handleSubmit} className="space-y-6">
           {currentUser?._id && <input type="hidden" name="id" value={currentUser._id} />}
        {/* <input type="hidden" name="contactId" value={formState.contact} /> */}
@@ -171,6 +171,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
                     value={formState.role?._id || ""}
                     placeholder="Search roles..."
                     onChange={handleRoleChange}
+                    
                   />
                   {errors.role && (
                     <p id="role-error" className="text-sm text-red-500">{errors.role}</p>
