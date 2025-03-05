@@ -152,7 +152,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
           <Card>
 
             <CardContent className="space-y-6">
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium">
                     Email (username)
@@ -161,7 +161,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
                   {errors.email && (
                     <p id="email-error" className="text-sm text-red-500">{errors.email[0]}</p>
                   )}
-                </div>
+              </div>
 
                 <div className="space-y-2">
                   <label htmlFor="role" className="text-sm font-medium">Role</label>
@@ -175,6 +175,8 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
                   {errors.role && (
                     <p id="role-error" className="text-sm text-red-500">{errors.role}</p>
                   )}
+                </div>
+              
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -241,7 +243,7 @@ export function UserForm({ onClose, onSuccess, onError, currentUser }: UserFormP
                     </label>
                   </div>
                 </div>
-              </div>
+             
             </CardContent>
           </Card>
         </form>
