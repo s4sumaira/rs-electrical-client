@@ -178,7 +178,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
           <Button
             type="button"
             variant="outline"
-            className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+            className="bg-btn-add hover:bg-btn-add-hover text-btn-add-fg"
             onClick={handleExportPDF}
           >          
             Export as PDF
