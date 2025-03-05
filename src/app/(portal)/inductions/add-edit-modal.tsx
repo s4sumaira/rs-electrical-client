@@ -172,6 +172,8 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
   if (isEditMode) {
     return (
       <Card className="p-6">
+         {hasPermission(Permissions.APPROVE_INDUCTION) &&
+         (
          <div className="flex justify-end mb-4">
           <Button
             type="button"
@@ -182,6 +184,7 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
             Export as PDF
           </Button>
         </div>
+  )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-8">
             {formSections.map((section, index) => {
