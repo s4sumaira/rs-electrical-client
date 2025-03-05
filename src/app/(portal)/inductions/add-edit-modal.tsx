@@ -21,6 +21,7 @@ import { sectionSchemas } from "@/lib/validations/inductionSections"
 import type { z } from "zod"
 import { useAuth } from "@/hooks/useAuth"
 import { Permissions } from "@/lib/types/permissions"
+import { exportInductionToPDF } from "./pdf-induction" 
 
 interface InductionFormProps {
   onClose: () => void
@@ -125,6 +126,16 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
     
   })
 
+  const handleExportPDF = () => {
+    try {
+      exportInductionToPDF(formState);
+      toast.success("PDF export successful!");
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast.error("Error generating PDF. Please try again.");
+    }
+  };
+
   const handleStatusChange = async () => {
     if (!currentInduction?._id) {
       toast.error("No induction selected for review.");
@@ -161,6 +172,16 @@ export function InductionForm({ onClose, currentInduction, onComplete }: Inducti
   if (isEditMode) {
     return (
       <Card className="p-6">
+         <div className="flex justify-end mb-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+            onClick={handleExportPDF}
+          >          
+            Export as PDF
+          </Button>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-8">
             {formSections.map((section, index) => {

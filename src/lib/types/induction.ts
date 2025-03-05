@@ -1,14 +1,6 @@
 import { ContactDocument } from "./contact" 
 import { DocumentStatus } from "../helpers/enum"
 
-// export enum InductionStatus {
-//     DRAFT = "DRAFT",
-//     SUBMITTED = "SUBMITTED",
-//     IN_REVIEW = "IN_REVIEW",
-//     APPROVED = "APPROVED",
-//     REJECTED = "REJECTED",
-//   }
-  
   interface Contact {
     _id: string
     fullName?: string
@@ -17,6 +9,7 @@ import { DocumentStatus } from "../helpers/enum"
   interface Project {
     _id:string
     name: string
+    fullAddress?:string
    
   }
   
@@ -58,13 +51,7 @@ import { DocumentStatus } from "../helpers/enum"
     understood: boolean
   }
   
-  // interface Document {
-  //   filename: string
-  //   path: string
-  //   uploadedAt: Date
-  //   type: string
-  // }
-  
+ 
   interface Confirmation {
     signature: string
     signedAt?: Date
@@ -84,8 +71,7 @@ import { DocumentStatus } from "../helpers/enum"
     occupationalHealth: OccupationalHealth
     compliance: Compliance
     riskAssessment: RiskAssessment
-    documents?: ContactDocument[] 
-    //statusHistory: StatusHistoryEntry[]
+    documents?: ContactDocument[]   
     inductionCompleted: boolean
     confirmation?: Confirmation
    createdAt?:string;
