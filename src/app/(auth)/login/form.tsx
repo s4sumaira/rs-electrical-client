@@ -27,9 +27,10 @@ export function LoginForm() {
       setIsLoading(true)
      
       const result = await login(data.email, data.password)
+   
 
       if (!result?.success) {
-        toast.error('Invalid credentials')
+        toast.error(result?.error as string || "Failed to login")
         setIsLoading(false)
         return
       }
