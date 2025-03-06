@@ -21,10 +21,10 @@ export function RiskAssessmentSection({
 }: SectionProps) {
 
 
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    console.log(errors)
-  },[errors])
+  //   console.log(errors)
+  // },[errors])
 
   return (
     <Card>
