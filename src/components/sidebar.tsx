@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {  Users, Briefcase, GraduationCap, X, CalendarClock,ShieldAlert
-  ,ShieldQuestion, ThermometerSun,WavesLadder} from "lucide-react";
+  ,ShieldQuestion, ThermometerSun,WavesLadder,Ambulance} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Permissions } from "@/lib/types/permissions";
 import { Logo } from "./logo";
@@ -16,11 +16,11 @@ const menuItems = [
   { icon: Users, text: "Contacts", href: "/contacts", permission: Permissions.VIEW_CONTACT },
   { icon: Briefcase, text: "Projects", href: "/projects", permission:Permissions.VIEW_PROJECT},
   { icon: GraduationCap, text: "Inductions", href: "/inductions", permission:Permissions.VIEW_INDUCTION },
-  { icon: ShieldAlert, text: "Daily Inspections", href: "/dailyinspection", permission:Permissions.VIEW_WEEKLY_CHECK },
+  { icon: ShieldAlert, text: "Daily Inspections", href: "/dailyinspection", permission:Permissions.VIEW_DAILY_CHECK },
   { icon: ShieldQuestion , text: "Weekly Inspections", href: "/weeklyinspection", permission:Permissions.VIEW_WEEKLY_CHECK },
-  { icon: ThermometerSun, text: "Hot Work Permit", href: "/hotworkpermit", permission:Permissions.VIEW_WEEKLY_CHECK },
-  { icon: WavesLadder, text: "Height Work Permit", href: "/heightpermit", permission:Permissions.VIEW_WEEKLY_CHECK },
-  
+  { icon: ThermometerSun, text: "Hot Work Permit", href: "/hotworkpermit", permission:Permissions.VIEW_HOT_WORK_PERMIT },
+  { icon: WavesLadder, text: "Height Work Permit", href: "/heightpermit", permission:Permissions.VIEW_HEIGHT_WORK_PERMIT },
+  { icon: Ambulance, text: "Accident/Incident", href: "/accidentOrIncident", permission:Permissions.VIEW_WEEKLY_CHECK },  
   { icon: CalendarClock, text: "Timesheet", href: "/timesheet", permission:Permissions.VIEW_TIMESHEET},
 ];
 

@@ -104,11 +104,11 @@ export function LoginForm() {
               )}
             </div>
 
-            <div className="text-right">
+            {/* <div className="text-right">
               <button type="button" className="text-sm text-gray-500 hover:text-orange-500">
                 Forgot password?
               </button>
-            </div>
+            </div> */}
 
             <Button 
               type="submit" 

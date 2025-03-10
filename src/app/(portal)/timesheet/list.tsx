@@ -81,9 +81,9 @@ export const AttendanceList = () => {
     {
       header: "On Site",
       key: "isOnSite",
-      className: "min-w-[120px]",
+      className: "min-w-[120px]  text-center",
       render: (value) => (
-        <div className="flex justify-center items-center">
+        <div className="items-center">
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"

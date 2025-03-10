@@ -13,6 +13,7 @@ import { PersonalInfo, ContactInfo, EmploymentInfo, DocumentsInfo } from "./tab-
 import { initialValues } from "@/app/(portal)/profile/constants";
 import type { ProfileFormProps } from "@/lib/types/profile";
 import type { ActionState } from "@/lib/types/form";
+import toast from "react-hot-toast";
 
 
 
@@ -36,6 +37,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
       formData.delete("files");
 
       const result = await updateContact(state, formData);
+
+      if (result.success) {
+        toast.success(result.message || "Profile updated successfully!");
+       
+      } else {
+        toast.error(result.error as string || "Failed to update profile.");
+      }
 
       return result;
     } finally {
@@ -110,9 +118,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSave }) => {
     if (contact) {
       const formattedContact = {
         ...contact,
-        birthDate: contact.birthDate
-          ? new Date(contact.birthDate).toLocaleDateString('en-GB').split('/').join('/')
-          : "",       
+        birthDate: contact.birthDate??""
+         // ? new Date(contact.birthDate).toLocaleDateString('en-GB').split('/').join('/')
+         // : "",       
       };
 
       setFormState(formattedContact);

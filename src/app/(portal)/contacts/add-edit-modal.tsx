@@ -9,6 +9,7 @@ import { ModalFooter } from "@/components/modal";
 import { useForm } from "@/hooks/useForm";
 import { SearchableSelect } from "@/components/searchable-select";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatUKDate } from "@/lib/utils";
 
 interface ContactFormProps {
   onClose: () => void;
@@ -27,9 +28,8 @@ export function ContactForm({ onClose, onSuccess, onError, currentContact }: Con
     jobTitle: currentContact?.jobTitle ?? "",
     contactType: currentContact?.contactType ?? ContactType.EMPLOYEE,
     ninumber: currentContact?.ninumber ?? "",
-    birthDate: currentContact?.birthDate 
-      ? new Date(currentContact.birthDate).toLocaleDateString('en-GB').split('/').join('/')
-      : "",
+    birthDate: currentContact?.birthDate ?? "",
+      //? new Date(currentContact.birthDate).toLocaleDateString('en-GB').split('/').join('/') : "",
     street: currentContact?.street ?? "",
     city: currentContact?.city ?? "",
     postCode: currentContact?.postCode ?? "",
@@ -56,12 +56,12 @@ export function ContactForm({ onClose, onSuccess, onError, currentContact }: Con
     resetOnSuccess: !currentContact,
   });
 
-  const formatUKDate = (input: string) => {
-    const digits = input.replace(/\D/g, '');
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
-  };
+  // const formatUKDate = (input: string) => {
+  //   const digits = input.replace(/\D/g, '');
+  //   if (digits.length <= 2) return digits;
+  //   if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  //   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+  // };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatUKDate(e.target.value);

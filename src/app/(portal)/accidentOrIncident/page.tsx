@@ -1,9 +1,9 @@
 
-import { DailyInspectionList } from "@/app/(portal)/dailyinspection/list" 
+import { AccidentIncidentList } from "./list" 
 
-export default function ContactsPage() {
+export default function AccidentPage() {
   return (
-   <DailyInspectionList></DailyInspectionList>
+   <AccidentIncidentList></AccidentIncidentList>
   )
 }
 

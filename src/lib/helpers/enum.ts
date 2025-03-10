@@ -15,3 +15,15 @@ export enum DocumentStatus {
     NO='NO',
     NA='N/A'
   }
+
+  export enum AccidentType {
+    ACCIDENT = "Accident",
+    INJURY = "Injury",
+    NEAR_MISS = "Near Miss",
+    INCIDENT = "Incident"
+  }
+
+  export enum Gender{
+    Male="Male",
+    Female="Female"
+  }
