@@ -90,9 +90,9 @@ export const HotWorkPermitList = () => {
       className: "min-w-[100px]",
       render: (value) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === DocumentStatus.SUBMITTED
+          value === DocumentStatus.COMPLETED
             ? "bg-yellow-200 text-black"
-            : value === DocumentStatus.APPROVED
+            : value === DocumentStatus.FINALISED
               ? "bg-green-100 text-green-800"
               : "bg-purple-100 text-red-500"
         }`}>

@@ -87,9 +87,9 @@ export const HeightPermitList = () => {
       render: (value) => (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
-            [ DocumentStatus.SUBMITTED].includes(value as any)
+            [ DocumentStatus.COMPLETED].includes(value as any)
               ? "bg-yellow-200 text-black"
-              : [DocumentStatus.COMPLETED, DocumentStatus.FINALISED].includes(value as any)
+              : [DocumentStatus.FINALISED].includes(value as any)
               ? "bg-green-100 text-green-800"
               : "bg-purple-100 text-red-500"
           }`}
